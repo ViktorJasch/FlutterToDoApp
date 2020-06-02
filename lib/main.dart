@@ -29,7 +29,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<String> tasks = <String>['To do 1', 'To do 2'];
+  List<String> tasks = <String>['To do 1', 'To do 2', 'To do 1', 'To do 1', 'To do 1', 'To do 1', 'To do 1', 'To do 1', 'To do 1', 'To do 1'];
 
   bool checkBoxValue = false;
 
@@ -37,7 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text('Задачи'),
       ),
       body: ListView.builder(
         itemCount: tasks.length,
@@ -62,7 +62,6 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           );
         },
-//        separatorBuilder: (BuildContext context, int int) => const Divider(),
       )
     );
   }

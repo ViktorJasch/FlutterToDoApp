@@ -29,7 +29,18 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<String> tasks = <String>['To do 1', 'To do 2', 'To do 1', 'To do 1', 'To do 1', 'To do 1', 'To do 1', 'To do 1', 'To do 1', 'To do 1'];
+  List<String> tasks = <String>[
+    'To do 1',
+    'You should use CrossAxisAlignment.baseline if you.111',
+    'You should use CrossAxisAlignment.baseline if you.111You should use CrossAxisAlignment.baseline if you.111You should use CrossAxisAlignment.baseline if you.111e if you.111You should use CrossAxisAlignment.baseline if you.111',
+    'To do 1',
+    'To do 1',
+    'To do 1',
+    'To do 1',
+    'To do 1',
+    'To do 1',
+    'To do 1'
+  ];
 
   bool checkBoxValue = false;
 
@@ -60,31 +71,49 @@ class _MyHomePageState extends State<MyHomePage> {
           )
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+      floatingActionButton: Builder( builder: (context) =>FloatingActionButton(
+        onPressed: () {
+          final snackBar = SnackBar(
+            content: Text('Функционал в разработке'),
+            action: SnackBarAction(
+              label: 'Ok',
+              onPressed: () {
+                
+              },
+            ),
+          );
+          Scaffold.of(context).showSnackBar(snackBar);
+        },
         child: Icon(Icons.add),
         backgroundColor: Colors.tealAccent[700],
-
+      ),
       ),
       body: ListView.builder(
         itemCount: tasks.length,
         itemBuilder: (BuildContext context, int index) {
           return Container(
             margin: const EdgeInsets.all(8),
+            padding: EdgeInsets.only(right: 8, top: 8, bottom: 8),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               color: Colors.white,
             ),
-            height: 70,
             child: Row(
+              mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 Checkbox(
                   value: checkBoxValue,
                 ),
-                Expanded(
-                   child: Text('${tasks[index]}')
-                ),
+                  Expanded(
+                    child: Text(
+                        '${tasks[index]}',
+                      textDirection: TextDirection.ltr,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 6,
+                    ),
+                  )
+
               ],
             ),
           );

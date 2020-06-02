@@ -33,11 +33,32 @@ class _MyHomePageState extends State<MyHomePage> {
 
   bool checkBoxValue = false;
 
+  void selectedItem(String value) {
+    switch(value) {
+      case 'Test' :
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Задачи'),
+        actions: <Widget>[
+          PopupMenuButton(
+            onSelected: selectedItem,
+            itemBuilder: (BuildContext context) {
+              return {''}.map((String choice) {
+                return PopupMenuItem<String>(
+                  value: choice,
+                  child: Text(choice),
+                );
+              }).toList();
+            },
+
+          )
+        ],
       ),
       body: ListView.builder(
         itemCount: tasks.length,

@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'To do list',
       theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
+        primaryColor: Colors.deepPurple[800],
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: MyHomePage(title: ''),
@@ -43,6 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.deepPurple[100],
       appBar: AppBar(
         title: Text('Задачи'),
         actions: <Widget>[
@@ -56,9 +57,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 );
               }).toList();
             },
-
           )
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: Icon(Icons.add),
+        backgroundColor: Colors.tealAccent[700],
+
       ),
       body: ListView.builder(
         itemCount: tasks.length,
@@ -67,9 +73,9 @@ class _MyHomePageState extends State<MyHomePage> {
             margin: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: Colors.blue,
+              color: Colors.white,
             ),
-            height: 50,
+            height: 70,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[

@@ -25,13 +25,26 @@ class _ListOfTasksState extends State<ListOfTasks> {
 
   bool checkBoxValue = false;
   bool validate = false;
+  int selectedRadio;
   final formKey = GlobalKey<FormState>();
   final _textEditingController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    selectedRadio = 0;
+  }
 
   @override
   void dispose() {
     _textEditingController.dispose();
     super.dispose();
+  }
+
+  setSelectedRadio(int value) {
+    setState(() {
+      selectedRadio = value;
+    });
   }
 
   void selectedItem(String value) {
@@ -42,7 +55,64 @@ class _ListOfTasksState extends State<ListOfTasks> {
       case 'Удалить выполненные':
         deleteSelectedItems();
         break;
+      case 'Изменить тему':
+        showBottomDialog();
+        break;
     }
+  }
+
+  void showBottomDialog(){
+    showModalBottomSheet(
+        context: context,
+        builder: (builder){
+          return new Container(
+            height: 137.0,
+            color: Colors.transparent,
+            child: new Container(
+                decoration: new BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: new BorderRadius.only(
+                        topLeft: const Radius.circular(10.0),
+                        topRight: const Radius.circular(10.0))
+                ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Row(
+                        children: <Widget>[
+                          Padding(padding: EdgeInsets.only(left: 20,top: 20),child: Text('Выбор темы')),
+                        ],
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: 10,top: 30),
+                        child: Row(
+                          children: <Widget>[
+                            Radio(
+                              value: 1,
+                              groupValue: selectedRadio,
+                              activeColor: Colors.red,
+                              onChanged: (val) {
+                                setSelectedRadio(val);
+                              },
+                            ),
+                            Radio(
+                              value: 2,
+                              groupValue: selectedRadio,
+                              activeColor: Colors.yellow,
+                              onChanged: (val) {
+                                setSelectedRadio(val);
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    ],
+                  )
+                ),
+          );
+        }
+    );
   }
 
    void deleteItem(int index) {
@@ -138,7 +208,7 @@ class _ListOfTasksState extends State<ListOfTasks> {
             PopupMenuButton(
               onSelected: selectedItem,
               itemBuilder: (BuildContext context) {
-                return {'Скрыть выполенные', 'Удалить выполненные'}.map((String choice) {
+                return {'Скрыть выполенные', 'Удалить выполненные', 'Изменить тему'}.map((String choice) {
                   return PopupMenuItem<String>(
                     value: choice,
                     child: Text(choice),
@@ -313,10 +383,3 @@ class _ListOfTasksState extends State<ListOfTasks> {
 //    );
 //  }
 //}
-
-class AddTaskButton extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
-}

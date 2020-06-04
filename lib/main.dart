@@ -16,6 +16,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.deepPurple[800],
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        canvasColor: Colors.transparent,
       ),
       home: ListOfTasks(),
       routes:  {

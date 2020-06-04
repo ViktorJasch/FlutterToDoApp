@@ -1,30 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:todoapp/screens/detail_screen.dart';
 import 'package:todoapp/model/task.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+class ListOfTasks extends StatefulWidget {
+  ListOfTasks({Key key, this.title}) : super(key: key);
 
   final String title;
 
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _ListOfTasksState createState() => _ListOfTasksState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _ListOfTasksState extends State<ListOfTasks> {
 
   List<Task> taskList = <Task>[
-    Task(title: 'Faaaaaaaa', isDone: false,),
-    Task(title: 'Faaaaaaaa', isDone: true,),
-    Task(title: 'Faaaaaaaa', isDone: false,),
-    Task(title: 'Faaaaaaaa', isDone: true,),
-    Task(title: 'Faaaaaaaa', isDone: false,),
+    Task(title: 'Faaaaaaaa', isDone: false, isVisible: true),
+    Task(title: 'Faaaaaaaa', isDone: true, isVisible: true),
+    Task(title: 'Faaaaaaaa', isDone: false, isVisible: true),
+    Task(title: 'Faaaaaaaa', isDone: true, isVisible: true),
+    Task(title: 'Faaaaaaaa', isDone: false, isVisible: true),
   ];
 
   bool checkBoxValue = false;
   bool validate = false;
-  bool isVisible = true;
   final formKey = GlobalKey<FormState>();
   final _textEditingController = TextEditingController();
 
@@ -125,9 +125,12 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    if (taskList.isEmpty) {
+      return Scaffold(
         backgroundColor: Colors.deepPurple[100],
         appBar: AppBar(
           title: Text('Задачи'),
@@ -145,20 +148,57 @@ class _MyHomePageState extends State<MyHomePage> {
             )
           ],
         ),
-        floatingActionButton: Builder(
-          builder: (context) => FloatingActionButton(
-            onPressed: () => displayDialog(context),
-            child: Icon(Icons.add),
-            backgroundColor: Colors.tealAccent[700],
+        floatingActionButton: FloatingActionButton(
+                onPressed: () => displayDialog(context),
+                child: Icon(Icons.add),
+                backgroundColor: Colors.tealAccent[700],
+              ),
+
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              SvgPicture.asset('assets/images/no_tasks_image.svg', semanticsLabel: 'Acme Logo'),
+              Padding(padding: EdgeInsets.only(top: 20) ,child: SvgPicture.asset('assets/images/no_tasks_text.svg', semanticsLabel: 'Acvvme Logo'))
+            ],
           ),
         ),
-        body: ListView.builder(
-          itemCount: taskList.length,
-          itemBuilder: (BuildContext context, index) {
-            return buildListViewItem(context, index);
-          },
-        )
-    );
+        );
+    } else {
+      return Scaffold(
+          backgroundColor: Colors.deepPurple[100],
+          appBar: AppBar(
+            title: Text('Задачи'),
+            actions: <Widget>[
+              PopupMenuButton(
+                onSelected: selectedItem,
+                itemBuilder: (BuildContext context) {
+                  return {'Скрыть выполенные', 'Удалить выполненные'}.map((
+                      String choice) {
+                    return PopupMenuItem<String>(
+                      value: choice,
+                      child: Text(choice),
+                    );
+                  }).toList();
+                },
+              )
+            ],
+          ),
+          floatingActionButton: FloatingActionButton(
+                  onPressed: () => displayDialog(context),
+                  child: Icon(Icons.add),
+                  backgroundColor: Colors.tealAccent[700],
+                ),
+
+          body: ListView.builder(
+            itemCount: taskList.length,
+            itemBuilder: (BuildContext context, index) {
+              return buildListViewItem(context, index);
+            },
+          )
+      );
+    }
   }
 
   Widget buildListViewItem(BuildContext context, int index) {
@@ -273,3 +313,10 @@ class _MyHomePageState extends State<MyHomePage> {
 //    );
 //  }
 //}
+
+class AddTaskButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+}

@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         primaryColor: Colors.deepPurple[800],
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(),
+      home: ListOfTasks(),
       routes:  {
         '/DetailScreen' : (BuildContext context) => DetailScreen()
       },

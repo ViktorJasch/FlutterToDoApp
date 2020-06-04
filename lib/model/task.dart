@@ -2,5 +2,6 @@
 class Task {
   String title;
   bool isDone;
-  Task({this.title, this.isDone});
+  bool isVisible;
+  Task({this.title, this.isDone, this.isVisible});
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'file:///C:/Users/Shilo.VS/AndroidStudioProjects/todo_app/lib/Screens/detail_screen.dart';
-import 'Screens/list_of_tasks_screen.dart';
+import 'package:todoapp/screens/detail_screen.dart';
+import 'package:todoapp/screens/list_of_tasks_screen.dart';
+
 
 void main() {
   runApp(MyApp());

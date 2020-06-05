@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+class item_manager {
+  void deleteItem(int index) {}
+}
 
 class DetailScreen extends StatelessWidget {
   DetailScreen({@required this.title});
@@ -24,7 +27,7 @@ class DetailView extends StatefulWidget {
     Step(title: "Найти запчасти", isDone: false),
     Step(
         title:
-            "Отвезти автомобиль в автосервис, если Иваныч опять нажрался, то ремонтировать самому",
+            "Купить запчасти",
         isDone: false)
   ];
 
@@ -32,7 +35,8 @@ class DetailView extends StatefulWidget {
   _DetailViewState createState() => _DetailViewState();
 }
 
-class _DetailViewState extends State<DetailView> {
+class _DetailViewState extends State<DetailView> implements item_manager {
+
   final key = GlobalKey<FormState>();
   bool shouldShowTextField = false;
 
@@ -46,7 +50,12 @@ class _DetailViewState extends State<DetailView> {
           ListView(
             shrinkWrap: true,
           children: widget.steps.map((Step step) {
-            return ListViewItem(step: step);
+           int index =  widget.steps.indexOf(step);
+            return ListViewItem(step: step, onDelete: () {
+              setState(() {
+                deleteItem(index);
+              });
+            });
           }).toList(),
         ),
           switchWidgets(),
@@ -72,8 +81,7 @@ class _DetailViewState extends State<DetailView> {
         ],
       );
     } else {
-      return WillPopScope(
-        child: Form(
+      return Form(
           key: key,
           child: TextFormField(
             onFieldSubmitted:(value) {
@@ -83,32 +91,33 @@ class _DetailViewState extends State<DetailView> {
                 });
             },
           ),
-          onWillPop: () {
-            setState(() {
-              shouldShowTextField = false;
-            });
-          },
-        ),
-      );
-    }
 
+        );
+    }
 }
+
+  @override
+  void deleteItem(int index) {
+    setState(() {
+      widget.steps.removeAt(index);
+    });
+  }
 
 }
 
 class ListViewItem extends StatefulWidget {
+
+  final Function onDelete;
   final Step step;
 
-  ListViewItem({@required this.step});
+
+  ListViewItem({@required this.step, @required this.onDelete});
 
   @override
-  _ListViewItemState createState() => _ListViewItemState(step: step);
+  _ListViewItemState createState() => _ListViewItemState();
 }
 
 class _ListViewItemState extends State<ListViewItem> {
-  final Step step;
-
-  _ListViewItemState({@required this.step});
 
   @override
   Widget build(BuildContext context) {
@@ -116,15 +125,15 @@ class _ListViewItemState extends State<ListViewItem> {
       title: Row(
         children: <Widget>[
           Checkbox(
-            value: step.isDone,
+            value: widget.step.isDone,
             onChanged: (bool value) {
               setState(() {
-                step.isDone = value;
+                widget.step.isDone = value;
               });
             },
           ),
           Expanded(
-            child: Text(step.title,
+            child: Text(widget.step.title,
                 textDirection: TextDirection.ltr,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 3),
@@ -133,7 +142,7 @@ class _ListViewItemState extends State<ListViewItem> {
             width: 40,
             child: FlatButton(
               padding: EdgeInsets.all(0),
-              onPressed: () => deleteItem(),
+              onPressed: widget.onDelete,
               child: Icon(
                 Icons.close,
               ),
@@ -143,8 +152,6 @@ class _ListViewItemState extends State<ListViewItem> {
       ),
     );
   }
-
-  void deleteItem() {}
 }
 
 class Step {

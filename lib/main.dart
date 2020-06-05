@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'To do list',
       theme: ThemeData(
-        primaryColor: Colors.deepPurple[800],
+        primaryColor: Color(0xFF6202EE),
         visualDensity: VisualDensity.adaptivePlatformDensity,
         canvasColor: Colors.transparent,
       ),

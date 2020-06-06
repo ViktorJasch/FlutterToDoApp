@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-class item_manager {
-  void deleteItem(int index) {}
-}
+import 'package:todoapp/model/task_step.dart';
+
+var myController = TextEditingController();
 
 class DetailScreen extends StatelessWidget {
   DetailScreen({@required this.title});
@@ -14,7 +14,7 @@ class DetailScreen extends StatelessWidget {
       resizeToAvoidBottomPadding: false,
       backgroundColor: Colors.deepPurple[100],
       appBar: AppBar(
-        title: Text('$title'),
+        title: Text(title),
       ),
       body: DetailView(),
     );
@@ -22,22 +22,16 @@ class DetailScreen extends StatelessWidget {
 }
 
 class DetailView extends StatefulWidget {
-
-  final List<Step> steps = [
-    Step(title: "Найти запчасти", isDone: false),
-    Step(
-        title:
-            "Купить запчасти",
-        isDone: false)
+  final List<TaskStep> steps = [
+    TaskStep(title: "Найти запчасти", isDone: false),
+    TaskStep(title: "Купить запчасти", isDone: false)
   ];
 
   @override
   _DetailViewState createState() => _DetailViewState();
 }
 
-class _DetailViewState extends State<DetailView> implements item_manager {
-
-  final key = GlobalKey<FormState>();
+class _DetailViewState extends State<DetailView> {
   bool shouldShowTextField = false;
 
   @override
@@ -45,71 +39,44 @@ class _DetailViewState extends State<DetailView> implements item_manager {
     return Center(
         child: Card(
       margin: EdgeInsets.only(top: 28, left: 16, right: 16, bottom: 322),
-      child: Column(
-        children: <Widget>[
-          ListView(
-            shrinkWrap: true,
-          children: widget.steps.map((Step step) {
-           int index =  widget.steps.indexOf(step);
-            return ListViewItem(step: step, onDelete: () {
-              setState(() {
-                deleteItem(index);
-              });
-            });
+      child: Column(children: <Widget>[
+        ListView(
+          shrinkWrap: true,
+          children: widget.steps.map((TaskStep step) {
+            int index = widget.steps.indexOf(step);
+            return ListViewItem(
+                step: step,
+                onDelete: () {
+                  setState(() {
+                    deleteItem(index);
+                  });
+                });
           }).toList(),
         ),
-          switchWidgets(),
-        ]
-      ),
+        AddStepButton(
+          shouldShowTextField: shouldShowTextField,
+          onAddStep: () {
+            setState(() {
+              print(widget.steps);
+              widget.steps
+                  .add(TaskStep(title: myController.text, isDone: false));
+            });
+          },
+        )
+      ]),
     ));
   }
 
-  Widget switchWidgets() {
-    if (shouldShowTextField == false) {
-      return ButtonBar(
-        layoutBehavior: ButtonBarLayoutBehavior.constrained,
-        alignment: MainAxisAlignment.start,
-        children: <Widget>[
-          FlatButton(
-            child: Text('+ Добавить шаг'),
-            onPressed: () {
-              setState(() {
-                  shouldShowTextField = !shouldShowTextField ? shouldShowTextField = true  : shouldShowTextField = false;
-              });
-            },
-          ),
-        ],
-      );
-    } else {
-      return Form(
-          key: key,
-          child: TextFormField(
-            onFieldSubmitted:(value) {
-                setState(() {
-                  shouldShowTextField = false;
-                  widget.steps.add(Step(title: value, isDone: false));
-                });
-            },
-          ),
-
-        );
-    }
-}
-
-  @override
   void deleteItem(int index) {
     setState(() {
       widget.steps.removeAt(index);
     });
   }
-
 }
 
 class ListViewItem extends StatefulWidget {
-
   final Function onDelete;
-  final Step step;
-
+  final TaskStep step;
 
   ListViewItem({@required this.step, @required this.onDelete});
 
@@ -118,7 +85,6 @@ class ListViewItem extends StatefulWidget {
 }
 
 class _ListViewItemState extends State<ListViewItem> {
-
   @override
   Widget build(BuildContext context) {
     return ListTile(
@@ -154,9 +120,50 @@ class _ListViewItemState extends State<ListViewItem> {
   }
 }
 
-class Step {
-  String title;
-  bool isDone;
+class AddStepButton extends StatefulWidget {
+  final key = GlobalKey<FormState>();
+  final Function onAddStep;
+  bool shouldShowTextField;
 
-  Step({@required this.title, @required this.isDone});
+  AddStepButton({@required this.shouldShowTextField, @required this.onAddStep});
+
+  @override
+  _AddStepButtonState createState() => _AddStepButtonState();
+}
+
+class _AddStepButtonState extends State<AddStepButton> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        child: !widget.shouldShowTextField
+            ? ButtonBar(
+                layoutBehavior: ButtonBarLayoutBehavior.constrained,
+                alignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  FlatButton(
+                    child: Text('+ Добавить шаг'),
+                    onPressed: () {
+                      setState(() {
+                        widget.shouldShowTextField = !widget.shouldShowTextField
+                            ? widget.shouldShowTextField = true
+                            : widget.shouldShowTextField = false;
+                      });
+                    },
+                  ),
+                ],
+              )
+            : Form(
+                key: widget.key,
+                child: TextFormField(
+                  controller: myController,
+                  onFieldSubmitted: (value) {
+                    setState(() {
+                      widget.onAddStep();
+                      widget.shouldShowTextField = !widget.shouldShowTextField;
+                      myController.clear();
+                    });
+                  },
+                ),
+              ));
+  }
 }

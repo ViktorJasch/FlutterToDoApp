@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:todoapp/model/task_step.dart';
+import 'package:todoapp/singletons.dart';
 
 var myController = TextEditingController();
 
 class DetailScreen extends StatelessWidget {
-  DetailScreen({@required this.title});
+  final void Function(int doneSteps, int totalSteps) callback;
+
+  DetailScreen({@required this.title, @required this.callback});
 
   final title;
 
@@ -46,6 +49,8 @@ class _DetailViewState extends State<DetailView> {
             int index = widget.steps.indexOf(step);
             return ListViewItem(
                 step: step,
+                doneSteps: getDoneSteps(),
+                totalSteps: getTotalSteps(),
                 onDelete: () {
                   setState(() {
                     deleteItem(index);
@@ -72,13 +77,23 @@ class _DetailViewState extends State<DetailView> {
       widget.steps.removeAt(index);
     });
   }
+
+  int getDoneSteps() {
+    return widget.steps.where((step) => step.isDone).toList().length;
+  }
+
+  int getTotalSteps() {
+    return widget.steps.length;
+  }
 }
 
 class ListViewItem extends StatefulWidget {
   final Function onDelete;
+  final int doneSteps;
+  final int totalSteps;
   final TaskStep step;
 
-  ListViewItem({@required this.step, @required this.onDelete});
+  ListViewItem({this.step, this.onDelete, this.doneSteps, this.totalSteps});
 
   @override
   _ListViewItemState createState() => _ListViewItemState();
@@ -95,6 +110,8 @@ class _ListViewItemState extends State<ListViewItem> {
             onChanged: (bool value) {
               setState(() {
                 widget.step.isDone = value;
+                appData.doneSteps = widget.doneSteps;
+                appData.totalSteps = widget.totalSteps;
               });
             },
           ),

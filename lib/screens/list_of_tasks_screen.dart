@@ -3,6 +3,7 @@ import 'package:todoapp/screens/detail_screen.dart';
 import 'package:todoapp/model/task.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
+import 'package:todoapp/singletons.dart';
 
 final textEditingController = TextEditingController();
 
@@ -359,6 +360,8 @@ class AddTaskAlertDialog extends StatelessWidget {
 class TaskListItem extends StatefulWidget {
   final Function onDelete;
   final Task task;
+  int doneSteps;
+  int totalSteps;
 
   TaskListItem({@required this.task, @required this.onDelete});
   @override
@@ -374,7 +377,9 @@ class _TaskListItemState extends State<TaskListItem> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => DetailScreen(title: widget.task.title)));
+                builder: (context) => DetailScreen(
+                      title: widget.task.title,
+                    )));
       },
       child: Container(
         margin: const EdgeInsets.all(8),
@@ -410,7 +415,8 @@ class _TaskListItemState extends State<TaskListItem> {
                     ),
                     Align(
                         alignment: Alignment.centerLeft,
-                        child: Text("n шагов из n"))
+                        child: Text(
+                            "${appData.doneSteps} шагов из ${appData.totalSteps}"))
                   ],
                 ),
               ),

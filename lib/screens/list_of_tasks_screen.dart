@@ -9,6 +9,9 @@ final textEditingController = TextEditingController();
 class ListOfTasks extends StatefulWidget {
   ListOfTasks({Key key, this.title}) : super(key: key);
 
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  bool shouldRemoveDone = false;
+  Color backgroundColor = Colors.blue;
   final String title;
 
   @override
@@ -17,12 +20,20 @@ class ListOfTasks extends StatefulWidget {
 
 class _ListOfTasksState extends State<ListOfTasks> {
   List<Task> taskList = <Task>[
-    Task(title: 'Task1', isDone: false, isVisible: true),
-    Task(title: 'Task2', isDone: true, isVisible: true),
-    Task(title: 'Task3', isDone: false, isVisible: true),
-    Task(title: 'Task4', isDone: true, isVisible: true),
-    Task(title: 'Task5', isDone: false, isVisible: true),
+    Task(title: 'Task1', isDone: false),
+    Task(title: 'Task2', isDone: true),
+    Task(title: 'Task3', isDone: false),
+    Task(title: 'Task4', isDone: true),
+    Task(title: 'Task5', isDone: false),
   ];
+
+  List<Task> getTasks(bool shouldRemoveDone) {
+    if (shouldRemoveDone) {
+      return taskList.where((task) => !task.isDone).toList();
+    } else {
+      return taskList;
+    }
+  }
 
   bool checkBoxValue = false;
   bool validate = false;
@@ -43,7 +54,8 @@ class _ListOfTasksState extends State<ListOfTasks> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFE5E5E5),
+      key: widget._scaffoldKey,
+      backgroundColor: widget.backgroundColor,
       appBar: AppBar(
         title: Text('Задачи'),
         actions: <Widget>[
@@ -85,10 +97,10 @@ class _ListOfTasksState extends State<ListOfTasks> {
                   ],
                 )
               : ListView.builder(
-                  itemCount: taskList.length,
+                  itemCount: getTasks(widget.shouldRemoveDone).length,
                   itemBuilder: (BuildContext context, index) {
                     return TaskListItem(
-                      task: taskList[index],
+                      task: getTasks(widget.shouldRemoveDone)[index],
                       onDelete: () {
                         setState(() {
                           deleteItem(index);
@@ -205,29 +217,34 @@ class _ListOfTasksState extends State<ListOfTasks> {
         });
   }
 
-  void changeColor(Color color) {
-    DynamicTheme.of(context).setThemeData(new ThemeData(primaryColor: color));
+  void changeColor(Color color, Color backgroundColor) {
+    DynamicTheme.of(context).setThemeData(new ThemeData(
+      primaryColor: color,
+    ));
+    widget._scaffoldKey.currentState.setState(() {
+      widget.backgroundColor = backgroundColor;
+    });
   }
 
   void setColor(val) {
     switch (val) {
       case 1:
-        changeColor(Color(0xFFF44336));
+        changeColor(Color(0xFFF44336), Color(0xFFFF7961));
         break;
       case 2:
-        changeColor(Color(0xFFFF5722));
+        changeColor(Color(0xFFFF5722), Color(0xFFFF7961));
         break;
       case 3:
-        changeColor(Color(0xFFFFC107));
+        changeColor(Color(0xFFFFC107), Color(0xFFFF7961));
         break;
       case 4:
-        changeColor(Color(0xFF4CAF50));
+        changeColor(Color(0xFF4CAF50), Color(0xFFFF7961));
         break;
       case 5:
-        changeColor(Color(0xFF2C98F0));
+        changeColor(Color(0xFF2C98F0), Color(0xFFFF7961));
         break;
       case 6:
-        changeColor(Color(0xFF6202EE));
+        changeColor(Color(0xFF6202EE), Color(0xFFFF7961));
         break;
     }
   }
@@ -254,7 +271,8 @@ class _ListOfTasksState extends State<ListOfTasks> {
 
   void deleteItem(int index) {
     setState(() {
-      taskList.removeAt(index);
+      Task task = getTasks(widget.shouldRemoveDone)[index];
+      taskList.remove(task);
     });
     print('Delete');
     print(taskList);
@@ -269,9 +287,9 @@ class _ListOfTasksState extends State<ListOfTasks> {
   }
 
   void hideSelectedItems() {
-    for (Task task in taskList) {
-      if (task.isDone) {}
-    }
+    setState(() {
+      widget.shouldRemoveDone = !widget.shouldRemoveDone;
+    });
   }
 
   void deleteSelectedItems() {

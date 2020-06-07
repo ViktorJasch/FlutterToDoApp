@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:todoapp/screens/detail_screen.dart';
 import 'package:todoapp/model/task.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:dynamic_theme/dynamic_theme.dart';
 
 final textEditingController = TextEditingController();
 
@@ -131,9 +132,12 @@ class _ListOfTasksState extends State<ListOfTasks> {
                             Radio(
                               value: 1,
                               groupValue: selectedRadio,
-                              activeColor: const Color(0xFFF44336),
+                              activeColor: Color(0xFFF44336),
                               onChanged: (val) {
-                                setState(() => setSelectedRadio(val));
+                                setState(() {
+                                  setSelectedRadio(val);
+                                  setColor(val);
+                                });
                               },
                             ),
                             Radio(
@@ -141,7 +145,10 @@ class _ListOfTasksState extends State<ListOfTasks> {
                               groupValue: selectedRadio,
                               activeColor: Color(0xFFFF5722),
                               onChanged: (val) {
-                                setState(() => setSelectedRadio(val));
+                                setState(() {
+                                  setSelectedRadio(val);
+                                  setColor(val);
+                                });
                               },
                             ),
                             Radio(
@@ -149,7 +156,10 @@ class _ListOfTasksState extends State<ListOfTasks> {
                               groupValue: selectedRadio,
                               activeColor: Color(0xFFFFC107),
                               onChanged: (val) {
-                                setState(() => setSelectedRadio(val));
+                                setState(() {
+                                  setSelectedRadio(val);
+                                  setColor(val);
+                                });
                               },
                             ),
                             Radio(
@@ -157,7 +167,10 @@ class _ListOfTasksState extends State<ListOfTasks> {
                               groupValue: selectedRadio,
                               activeColor: Color(0xFF4CAF50),
                               onChanged: (val) {
-                                setState(() => setSelectedRadio(val));
+                                setState(() {
+                                  setSelectedRadio(val);
+                                  setColor(val);
+                                });
                               },
                             ),
                             Radio(
@@ -165,7 +178,10 @@ class _ListOfTasksState extends State<ListOfTasks> {
                               groupValue: selectedRadio,
                               activeColor: Color(0xFF2C98F0),
                               onChanged: (val) {
-                                setState(() => setSelectedRadio(val));
+                                setState(() {
+                                  setSelectedRadio(val);
+                                  setColor(val);
+                                });
                               },
                             ),
                             Radio(
@@ -173,7 +189,10 @@ class _ListOfTasksState extends State<ListOfTasks> {
                               groupValue: selectedRadio,
                               activeColor: Color(0xFF6202EE),
                               onChanged: (val) {
-                                setState(() => setSelectedRadio(val));
+                                setState(() {
+                                  setSelectedRadio(val);
+                                  setColor(val);
+                                });
                               },
                             ),
                           ],
@@ -184,6 +203,33 @@ class _ListOfTasksState extends State<ListOfTasks> {
             }),
           );
         });
+  }
+
+  void changeColor(Color color) {
+    DynamicTheme.of(context).setThemeData(new ThemeData(primaryColor: color));
+  }
+
+  void setColor(val) {
+    switch (val) {
+      case 1:
+        changeColor(Color(0xFFF44336));
+        break;
+      case 2:
+        changeColor(Color(0xFFFF5722));
+        break;
+      case 3:
+        changeColor(Color(0xFFFFC107));
+        break;
+      case 4:
+        changeColor(Color(0xFF4CAF50));
+        break;
+      case 5:
+        changeColor(Color(0xFF2C98F0));
+        break;
+      case 6:
+        changeColor(Color(0xFF6202EE));
+        break;
+    }
   }
 
   setSelectedRadio(int value) {

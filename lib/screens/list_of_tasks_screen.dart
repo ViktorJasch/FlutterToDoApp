@@ -332,10 +332,24 @@ class _TaskListItemState extends State<TaskListItem> {
               },
             ),
             Expanded(
-              child: Text(widget.task.title,
-                  textDirection: TextDirection.ltr,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 6),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: Column(
+                  children: <Widget>[
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(widget.task.title,
+                          textDirection: TextDirection.ltr,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: true,
+                          maxLines: 6),
+                    ),
+                    Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text("n шагов из n"))
+                  ],
+                ),
+              ),
             ),
             SizedBox(
               width: 40,

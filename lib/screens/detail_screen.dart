@@ -1,9 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:todoapp/model/task_step.dart';
 import 'package:todoapp/model/task.dart';
 
 var addStepFormController = TextEditingController();
 var addNoteStepController = TextEditingController();
+var editStepController = TextEditingController();
 
 class DetailScreen extends StatelessWidget {
   final Function(Task task) onTaskChanged;
@@ -38,66 +40,77 @@ DetailView({@required this.task, this.onTaskChanged});
   _DetailViewState createState() => _DetailViewState();
 }
 
+
+
 class _DetailViewState extends State<DetailView> {
   bool shouldShowTextField = false;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-        child: Card(
-      margin: EdgeInsets.only(top: 28, left: 16, right: 16),
-      child: Column(children: <Widget>[
-        SizedBox(
-          height: 170,
-          child: ListView(
-            shrinkWrap: true,
-            children: widget.task.steps.map((TaskStep step) {
-              int index = widget.task.steps.indexOf(step);
-              return ListViewItem(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Card(
+          elevation: 10.0,
+          margin: EdgeInsets.only(top: 28, left: 16, right: 16),
+          child: Column(children: <Widget>[
+            Column(
+              children: widget.task.steps.map((TaskStep step) {
+                int index = widget.task.steps.indexOf(step);
+                return ListViewItem(
+                  textEditingController: step.textEditingController..text = step.title,
                   step: step,
-                  onStepChanged: () {
-                    widget.onTaskChanged();
-                  },
+                  onStepChanged: widget.onTaskChanged,
                   onDelete: () {
                     setState(() {
                       deleteItem(index);
                       widget.onTaskChanged();
                     });
-                  });
-            }).toList(),
-          ),
-        ),
-        AddStepButton(
-          shouldShowTextField: shouldShowTextField,
-          onAddStep: () {
-            setState(() {
-              print(widget.task.steps);
-              widget.task.steps
-                  .add(TaskStep(title: addStepFormController.text, isDone: false));
-              widget.onTaskChanged();
-            });
-          },
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 16, right: 16),
-          child: Form(
-            key: widget.noteForm,
-            child: TextFormField(
-              controller: addNoteStepController,
-              decoration: InputDecoration(
-                hintText: showNotePlaceholder(),
-              ),
-              onFieldSubmitted: (text) {
+                  },
+                );
+              }).toList(),
+            ),
+            AddStepButton(
+              shouldShowTextField: shouldShowTextField,
+              onAddStep: () {
                 setState(() {
-                  widget.task.note = text;
-                  addNoteStepController.clear();
+                  print(widget.task.steps);
+                  widget.task.steps
+                      .add(TaskStep(title: addStepFormController.text, isDone: false, textEditingController: TextEditingController()));
+                  widget.onTaskChanged();
                 });
               },
             ),
-          ),
+            const Divider(
+              color: Colors.black,
+              height: 0,
+              thickness: 1,
+              indent: 16,
+              endIndent: 16,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 16, right: 16),
+              child: Form(
+                key: widget.noteForm,
+                child: TextFormField(
+                  controller: addNoteStepController,
+                  decoration: InputDecoration(
+                    hintText: showNotePlaceholder(),
+                    border: InputBorder.none
+                  ),
+                  onFieldSubmitted: (text) {
+                    setState(() {
+                      widget.task.note = text;
+                      addNoteStepController.clear();
+                    });
+                  },
+                ),
+              ),
+            )
+          ]),
         )
-      ]),
-    ));
+      ],
+    );
   }
 
   String showNotePlaceholder() {
@@ -117,21 +130,31 @@ class _DetailViewState extends State<DetailView> {
 }
 
 class ListViewItem extends StatefulWidget {
+  final stepForm = GlobalKey<FormState>();
+  TextEditingController textEditingController;
   final Function onDelete;
   final Function onStepChanged;
   final TaskStep step;
 
-  ListViewItem({this.step, this.onDelete, this.onStepChanged});
+  ListViewItem({this.step, this.onDelete, this.onStepChanged, this.textEditingController});
 
   @override
   _ListViewItemState createState() => _ListViewItemState();
 }
 
 class _ListViewItemState extends State<ListViewItem> {
+
+  @override
+  void initState() {
+    super.initState();
+    widget.textEditingController = TextEditingController()..text = widget.step.title;
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListTile(
       title: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           Checkbox(
             value: widget.step.isDone,
@@ -142,11 +165,23 @@ class _ListViewItemState extends State<ListViewItem> {
               });
             },
           ),
-          Expanded(
-            child: Text(widget.step.title,
-                textDirection: TextDirection.ltr,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 3),
+          Flexible(
+            child: Form(
+              key: widget.stepForm,
+              child: TextFormField(
+                decoration: InputDecoration(
+                  border: InputBorder.none
+                ),
+                controller: widget.textEditingController,
+//                initialValue: 'Init',
+                onFieldSubmitted: (text) {
+                  setState(() {
+                    widget.step.title = text;
+                    print(widget.step.title);
+                  });
+                },
+              ),
+            ),
           ),
           SizedBox(
             width: 40,
@@ -196,18 +231,21 @@ class _AddStepButtonState extends State<AddStepButton> {
                   ),
                 ],
               )
-            : Form(
-                key: widget.key,
-                child: TextFormField(
-                  controller: addStepFormController,
-                  onFieldSubmitted: (value) {
-                    setState(() {
-                      widget.onAddStep();
-                      widget.shouldShowTextField = !widget.shouldShowTextField;
-                      addStepFormController.clear();
-                    });
-                  },
+            : Padding(
+              padding: const EdgeInsets.only(left: 16, right: 16),
+              child: Form(
+                  key: widget.key,
+                  child: TextFormField(
+                    controller: addStepFormController,
+                    onFieldSubmitted: (value) {
+                      setState(() {
+                        widget.onAddStep();
+                        widget.shouldShowTextField = !widget.shouldShowTextField;
+                        addStepFormController.clear();
+                      });
+                    },
+                  ),
                 ),
-              ));
+            ));
   }
 }

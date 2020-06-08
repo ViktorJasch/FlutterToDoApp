@@ -20,11 +20,11 @@ class ListOfTasks extends StatefulWidget {
 
 class _ListOfTasksState extends State<ListOfTasks> {
   List<Task> taskList = <Task>[
-    Task(title: 'Task1', isDone: false, steps: [TaskStep(title: 'Step 1 of Task 1', isDone: false), TaskStep(title: 'Step 2 of Task 1', isDone: false), TaskStep(title: 'Step 3 of Task 1', isDone: false)]),
-    Task(title: 'Task2', isDone: true, steps: [TaskStep(title: 'Step of Task 2', isDone: false),TaskStep(title: 'Step 2 of Task 2', isDone: false)]),
+    Task(title: 'Task1', isDone: false, steps: [TaskStep(title: 'Step 1 of Task 1', isDone: false, textEditingController: TextEditingController()), TaskStep(title: 'Step 2 of Task 1', isDone: false, textEditingController: TextEditingController()), TaskStep(title: 'Step 3 of Task 1', isDone: false,textEditingController: TextEditingController()), ]),
+    Task(title: 'Task2', isDone: true, steps: [TaskStep(title: 'Step of Task 2', isDone: false, textEditingController: TextEditingController()),TaskStep(title: 'Step 2 of Task 2', isDone: false, textEditingController: TextEditingController()), ]),
     Task(title: 'Task3', isDone: false, steps: [TaskStep(title: 'Step of Task 3', isDone: false)]),
-    Task(title: 'Task4', isDone: true, steps: [TaskStep(title: 'Step 1 of Task 4', isDone: false),TaskStep(title: 'Step 2 of Task 4', isDone: false),TaskStep(title: 'Step 3 of Task 4', isDone: false),TaskStep(title: 'Step 4 of Task 4', isDone: false)]),
-    Task(title: 'Task5', isDone: false, steps: [TaskStep(title: 'Step of Task 5', isDone: false)]),
+    Task(title: 'Task4', isDone: true, steps: [TaskStep(title: 'Step 1 of Task 4', isDone: false, textEditingController: TextEditingController()),TaskStep(title: 'Step 2 of Task 4', isDone: false, textEditingController: TextEditingController()),TaskStep(title: 'Step 3 of Task 4', isDone: false, textEditingController: TextEditingController()),TaskStep(title: 'Step 4 of Task 4', isDone: false, textEditingController: TextEditingController())]),
+    Task(title: 'Task5', isDone: false, steps: [TaskStep(title: 'Step of Task 5', isDone: false, textEditingController: TextEditingController()), ]),
   ];
 
   bool checkBoxValue = false;

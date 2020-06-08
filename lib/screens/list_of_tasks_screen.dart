@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:todoapp/model/task_step.dart';
 import 'package:todoapp/screens/detail_screen.dart';
 import 'package:todoapp/model/task.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
-import 'package:todoapp/singletons.dart';
 
 final textEditingController = TextEditingController();
 
@@ -12,7 +12,6 @@ class ListOfTasks extends StatefulWidget {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool shouldRemoveDone = false;
-  Color backgroundColor = Colors.blue;
   final String title;
 
   @override
@@ -21,29 +20,23 @@ class ListOfTasks extends StatefulWidget {
 
 class _ListOfTasksState extends State<ListOfTasks> {
   List<Task> taskList = <Task>[
-    Task(title: 'Task1', isDone: false),
-    Task(title: 'Task2', isDone: true),
-    Task(title: 'Task3', isDone: false),
-    Task(title: 'Task4', isDone: true),
-    Task(title: 'Task5', isDone: false),
+    Task(title: 'Task1', isDone: false, steps: [TaskStep(title: 'Step 1 of Task 1', isDone: false), TaskStep(title: 'Step 2 of Task 1', isDone: false), TaskStep(title: 'Step 3 of Task 1', isDone: false)]),
+    Task(title: 'Task2', isDone: true, steps: [TaskStep(title: 'Step of Task 2', isDone: false),TaskStep(title: 'Step 2 of Task 2', isDone: false)]),
+    Task(title: 'Task3', isDone: false, steps: [TaskStep(title: 'Step of Task 3', isDone: false)]),
+    Task(title: 'Task4', isDone: true, steps: [TaskStep(title: 'Step 1 of Task 4', isDone: false),TaskStep(title: 'Step 2 of Task 4', isDone: false),TaskStep(title: 'Step 3 of Task 4', isDone: false),TaskStep(title: 'Step 4 of Task 4', isDone: false)]),
+    Task(title: 'Task5', isDone: false, steps: [TaskStep(title: 'Step of Task 5', isDone: false)]),
   ];
-
-  List<Task> getTasks(bool shouldRemoveDone) {
-    if (shouldRemoveDone) {
-      return taskList.where((task) => !task.isDone).toList();
-    } else {
-      return taskList;
-    }
-  }
 
   bool checkBoxValue = false;
   bool validate = false;
   int selectedRadio;
+  Color backgroundColor;
 
   @override
   void initState() {
     super.initState();
     selectedRadio = 0;
+    backgroundColor = Color(0xFF9e47ff);
   }
 
   @override
@@ -56,7 +49,7 @@ class _ListOfTasksState extends State<ListOfTasks> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: widget._scaffoldKey,
-      backgroundColor: widget.backgroundColor,
+      backgroundColor: backgroundColor,
       appBar: AppBar(
         title: Text('Задачи'),
         actions: <Widget>[
@@ -102,6 +95,8 @@ class _ListOfTasksState extends State<ListOfTasks> {
                   itemBuilder: (BuildContext context, index) {
                     return TaskListItem(
                       task: getTasks(widget.shouldRemoveDone)[index],
+                      doneSteps: taskList[index].steps.where((step) => step.isDone).toList().length,
+                      totalSteps: taskList[index].steps.length,
                       onDelete: () {
                         setState(() {
                           deleteItem(index);
@@ -218,13 +213,19 @@ class _ListOfTasksState extends State<ListOfTasks> {
         });
   }
 
-  void changeColor(Color color, Color backgroundColor) {
+  List<Task> getTasks(bool shouldRemoveDone) {
+    if (shouldRemoveDone) {
+      return taskList.where((task) => !task.isDone).toList();
+    } else {
+      return taskList;
+    }
+  }
+
+  void changeColor(Color color, Color background) {
     DynamicTheme.of(context).setThemeData(new ThemeData(
       primaryColor: color,
     ));
-    widget._scaffoldKey.currentState.setState(() {
-      widget.backgroundColor = backgroundColor;
-    });
+    backgroundColor = background;
   }
 
   void setColor(val) {
@@ -233,19 +234,19 @@ class _ListOfTasksState extends State<ListOfTasks> {
         changeColor(Color(0xFFF44336), Color(0xFFFF7961));
         break;
       case 2:
-        changeColor(Color(0xFFFF5722), Color(0xFFFF7961));
+        changeColor(Color(0xFFFF5722), Color(0xFFff8a50));
         break;
       case 3:
-        changeColor(Color(0xFFFFC107), Color(0xFFFF7961));
+        changeColor(Color(0xFFFFC107), Color(0xFFfff350));
         break;
       case 4:
-        changeColor(Color(0xFF4CAF50), Color(0xFFFF7961));
+        changeColor(Color(0xFF4CAF50), Color(0xFF80e27e));
         break;
       case 5:
-        changeColor(Color(0xFF2C98F0), Color(0xFFFF7961));
+        changeColor(Color(0xFF2C98F0), Color(0xFF72c8ff));
         break;
       case 6:
-        changeColor(Color(0xFF6202EE), Color(0xFFFF7961));
+        changeColor(Color(0xFF6202EE), Color(0xFF9e47ff));
         break;
     }
   }
@@ -281,7 +282,7 @@ class _ListOfTasksState extends State<ListOfTasks> {
 
   void addItem(String title) {
     setState(() {
-      taskList.add(Task(title: title, isDone: false));
+      taskList.add(Task(title: title, isDone: false, steps: []));
       textEditingController.clear();
       print(taskList);
     });
@@ -363,12 +364,22 @@ class TaskListItem extends StatefulWidget {
   int doneSteps;
   int totalSteps;
 
-  TaskListItem({@required this.task, @required this.onDelete});
+
+
+  TaskListItem({@required this.task, @required this.onDelete, this.doneSteps, this.totalSteps});
   @override
   _TaskListItemState createState() => _TaskListItemState();
 }
 
 class _TaskListItemState extends State<TaskListItem> {
+
+  @override
+  void initState() {
+    super.initState();
+    widget.doneSteps = getDoneSteps(widget.task);
+    widget.totalSteps = getTotalSteps(widget.task);
+  }
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -378,7 +389,13 @@ class _TaskListItemState extends State<TaskListItem> {
             context,
             MaterialPageRoute(
                 builder: (context) => DetailScreen(
-                      title: widget.task.title,
+                      task: widget.task,
+                      onTaskChanged: (task) {
+                        setState(() {
+                          widget.doneSteps = getDoneSteps(task);
+                          widget.totalSteps = getTotalSteps(task);
+                        });
+                      }
                     )));
       },
       child: Container(
@@ -416,7 +433,7 @@ class _TaskListItemState extends State<TaskListItem> {
                     Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                            "${appData.doneSteps} шагов из ${appData.totalSteps}"))
+                            "${widget.doneSteps} из ${widget.totalSteps}"))
                   ],
                 ),
               ),
@@ -436,4 +453,14 @@ class _TaskListItemState extends State<TaskListItem> {
       ),
     );
   }
+
+  int getDoneSteps(Task task) {
+    return task.steps.where((step) => step.isDone).toList().length;
+  }
+
+  int getTotalSteps(Task task) {
+    return task.steps.length;
+  }
 }
+
+

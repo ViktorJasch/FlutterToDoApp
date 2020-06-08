@@ -1,34 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:todoapp/model/task_step.dart';
-import 'package:todoapp/singletons.dart';
+import 'package:todoapp/model/task.dart';
 
-var myController = TextEditingController();
+var addStepFormController = TextEditingController();
+var addNoteStepController = TextEditingController();
 
 class DetailScreen extends StatelessWidget {
-  final void Function(int doneSteps, int totalSteps) callback;
+  final Function(Task task) onTaskChanged;
 
-  DetailScreen({@required this.title, @required this.callback});
+  DetailScreen({@required this.task, this.onTaskChanged});
 
-  final title;
+  final Task task;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomPadding: false,
-      backgroundColor: Colors.deepPurple[100],
+      backgroundColor: Colors.indigo[100],
       appBar: AppBar(
-        title: Text(title),
+        title: Text(task.title),
       ),
-      body: DetailView(),
+      body: DetailView(task: task, onTaskChanged: () {
+        onTaskChanged(task);
+      },),
     );
   }
 }
 
 class DetailView extends StatefulWidget {
-  final List<TaskStep> steps = [
-    TaskStep(title: "Найти запчасти", isDone: false),
-    TaskStep(title: "Купить запчасти", isDone: false)
-  ];
+  final noteForm = GlobalKey<FormState>();
+  final Function onTaskChanged;
+  final Task task;
+
+DetailView({@required this.task, this.onTaskChanged});
 
   @override
   _DetailViewState createState() => _DetailViewState();
@@ -41,59 +45,83 @@ class _DetailViewState extends State<DetailView> {
   Widget build(BuildContext context) {
     return Center(
         child: Card(
-      margin: EdgeInsets.only(top: 28, left: 16, right: 16, bottom: 322),
+      margin: EdgeInsets.only(top: 28, left: 16, right: 16),
       child: Column(children: <Widget>[
-        ListView(
-          shrinkWrap: true,
-          children: widget.steps.map((TaskStep step) {
-            int index = widget.steps.indexOf(step);
-            return ListViewItem(
-                step: step,
-                doneSteps: getDoneSteps(),
-                totalSteps: getTotalSteps(),
-                onDelete: () {
-                  setState(() {
-                    deleteItem(index);
+        SizedBox(
+          height: 170,
+          child: ListView(
+            shrinkWrap: true,
+            children: widget.task.steps.map((TaskStep step) {
+              int index = widget.task.steps.indexOf(step);
+              return ListViewItem(
+                  step: step,
+                  onStepChanged: () {
+                    widget.onTaskChanged();
+                  },
+                  onDelete: () {
+                    setState(() {
+                      deleteItem(index);
+                      widget.onTaskChanged();
+                    });
                   });
-                });
-          }).toList(),
+            }).toList(),
+          ),
         ),
         AddStepButton(
           shouldShowTextField: shouldShowTextField,
           onAddStep: () {
             setState(() {
-              print(widget.steps);
-              widget.steps
-                  .add(TaskStep(title: myController.text, isDone: false));
+              print(widget.task.steps);
+              widget.task.steps
+                  .add(TaskStep(title: addStepFormController.text, isDone: false));
+              widget.onTaskChanged();
             });
           },
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 16, right: 16),
+          child: Form(
+            key: widget.noteForm,
+            child: TextFormField(
+              controller: addNoteStepController,
+              decoration: InputDecoration(
+                hintText: showNotePlaceholder(),
+              ),
+              onFieldSubmitted: (text) {
+                setState(() {
+                  widget.task.note = text;
+                  addNoteStepController.clear();
+                });
+              },
+            ),
+          ),
         )
       ]),
     ));
   }
 
+  String showNotePlaceholder() {
+    if (widget.task.note == null || widget.task.note.isEmpty) {
+      return "Заметки по задаче...";
+    } else {
+      return widget.task.note;
+    }
+}
+
   void deleteItem(int index) {
     setState(() {
-      widget.steps.removeAt(index);
+      widget.task.steps.removeAt(index);
     });
-  }
-
-  int getDoneSteps() {
-    return widget.steps.where((step) => step.isDone).toList().length;
-  }
-
-  int getTotalSteps() {
-    return widget.steps.length;
+    print(widget.task.steps);
   }
 }
 
 class ListViewItem extends StatefulWidget {
   final Function onDelete;
-  final int doneSteps;
-  final int totalSteps;
+  final Function onStepChanged;
   final TaskStep step;
 
-  ListViewItem({this.step, this.onDelete, this.doneSteps, this.totalSteps});
+  ListViewItem({this.step, this.onDelete, this.onStepChanged});
 
   @override
   _ListViewItemState createState() => _ListViewItemState();
@@ -110,8 +138,7 @@ class _ListViewItemState extends State<ListViewItem> {
             onChanged: (bool value) {
               setState(() {
                 widget.step.isDone = value;
-                appData.doneSteps = widget.doneSteps;
-                appData.totalSteps = widget.totalSteps;
+                widget.onStepChanged();
               });
             },
           ),
@@ -138,7 +165,7 @@ class _ListViewItemState extends State<ListViewItem> {
 }
 
 class AddStepButton extends StatefulWidget {
-  final key = GlobalKey<FormState>();
+  final addStepForm = GlobalKey<FormState>();
   final Function onAddStep;
   bool shouldShowTextField;
 
@@ -158,7 +185,7 @@ class _AddStepButtonState extends State<AddStepButton> {
                 alignment: MainAxisAlignment.start,
                 children: <Widget>[
                   FlatButton(
-                    child: Text('+ Добавить шаг'),
+                    child: Text('+  Добавить шаг'),
                     onPressed: () {
                       setState(() {
                         widget.shouldShowTextField = !widget.shouldShowTextField
@@ -172,12 +199,12 @@ class _AddStepButtonState extends State<AddStepButton> {
             : Form(
                 key: widget.key,
                 child: TextFormField(
-                  controller: myController,
+                  controller: addStepFormController,
                   onFieldSubmitted: (value) {
                     setState(() {
                       widget.onAddStep();
                       widget.shouldShowTextField = !widget.shouldShowTextField;
-                      myController.clear();
+                      addStepFormController.clear();
                     });
                   },
                 ),

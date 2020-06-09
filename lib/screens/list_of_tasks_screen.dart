@@ -36,7 +36,7 @@ class _ListOfTasksState extends State<ListOfTasks> {
   void initState() {
     super.initState();
     selectedRadio = 0;
-    backgroundColor = Color(0xFF9e47ff);
+    backgroundColor = Color(0xFFe3e3e3);
   }
 
   @override
@@ -73,7 +73,7 @@ class _ListOfTasksState extends State<ListOfTasks> {
       floatingActionButton: FloatingActionButton(
         onPressed: () => displayDialog(context),
         child: Icon(Icons.add),
-        backgroundColor: Colors.tealAccent[700],
+        backgroundColor: Color(0xFF01A39D),
       ),
       body: Center(
           child: taskList.isEmpty
@@ -394,8 +394,13 @@ class _TaskListItemState extends State<TaskListItem> {
                         setState(() {
                           widget.doneSteps = getDoneSteps(task);
                           widget.totalSteps = getTotalSteps(task);
+                          widget.task.isDone = task.isDone;
+                          widget.task.title = task.title;
                         });
-                      }
+                      },
+                  onDeleteTask: (task) {
+
+                  },
                     )));
       },
       child: Container(

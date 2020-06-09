@@ -22,7 +22,7 @@ class _ListOfTasksState extends State<ListOfTasks> {
   List<Task> taskList = <Task>[
     Task(title: 'Task1', isDone: false, steps: [TaskStep(title: 'Step 1 of Task 1', isDone: false, textEditingController: TextEditingController()), TaskStep(title: 'Step 2 of Task 1', isDone: false, textEditingController: TextEditingController()), TaskStep(title: 'Step 3 of Task 1', isDone: false,textEditingController: TextEditingController()), ]),
     Task(title: 'Task2', isDone: true, steps: [TaskStep(title: 'Step of Task 2', isDone: false, textEditingController: TextEditingController()),TaskStep(title: 'Step 2 of Task 2', isDone: false, textEditingController: TextEditingController()), ]),
-    Task(title: 'Task3', isDone: false, steps: [TaskStep(title: 'Step of Task 3', isDone: false)]),
+    Task(title: 'Task3', isDone: false, steps: [TaskStep(title: 'Step of Task 3', isDone: false, textEditingController: TextEditingController())]),
     Task(title: 'Task4', isDone: true, steps: [TaskStep(title: 'Step 1 of Task 4', isDone: false, textEditingController: TextEditingController()),TaskStep(title: 'Step 2 of Task 4', isDone: false, textEditingController: TextEditingController()),TaskStep(title: 'Step 3 of Task 4', isDone: false, textEditingController: TextEditingController()),TaskStep(title: 'Step 4 of Task 4', isDone: false, textEditingController: TextEditingController())]),
     Task(title: 'Task5', isDone: false, steps: [TaskStep(title: 'Step of Task 5', isDone: false, textEditingController: TextEditingController()), ]),
   ];
@@ -246,7 +246,7 @@ class _ListOfTasksState extends State<ListOfTasks> {
         changeColor(Color(0xFF2C98F0), Color(0xFF72c8ff));
         break;
       case 6:
-        changeColor(Color(0xFF6202EE), Color(0xFF9e47ff));
+        changeColor(Color(0xFF6202EE), Color(0xFFe3e3e3));
         break;
     }
   }

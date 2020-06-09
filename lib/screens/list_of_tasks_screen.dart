@@ -414,6 +414,11 @@ class _TaskListItemState extends State<TaskListItem> {
         ),
         Dismissible(
           key: Key(widget.task.id),
+          onDismissed: (direction) {
+            setState(() {
+              widget.onDelete();;
+            });
+          },
           child: InkWell(
             onTap: () {
               print('Tap!');

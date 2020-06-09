@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:todoapp/model/task_step.dart';
 import 'package:todoapp/screens/detail_screen.dart';
@@ -11,8 +13,8 @@ class ListOfTasks extends StatefulWidget {
   ListOfTasks({Key key, this.title}) : super(key: key);
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  bool shouldRemoveDone = false;
   final String title;
+  final random = Random();
 
   @override
   _ListOfTasksState createState() => _ListOfTasksState();
@@ -20,15 +22,14 @@ class ListOfTasks extends StatefulWidget {
 
 class _ListOfTasksState extends State<ListOfTasks> {
   List<Task> taskList = <Task>[
-    Task(title: 'Task1', isDone: false, steps: [TaskStep(title: 'Step 1 of Task 1', isDone: false, textEditingController: TextEditingController()), TaskStep(title: 'Step 2 of Task 1', isDone: false, textEditingController: TextEditingController()), TaskStep(title: 'Step 3 of Task 1', isDone: false,textEditingController: TextEditingController()), ]),
-    Task(title: 'Task2', isDone: true, steps: [TaskStep(title: 'Step of Task 2', isDone: false, textEditingController: TextEditingController()),TaskStep(title: 'Step 2 of Task 2', isDone: false, textEditingController: TextEditingController()), ]),
-    Task(title: 'Task3', isDone: false, steps: [TaskStep(title: 'Step of Task 3', isDone: false, textEditingController: TextEditingController())]),
-    Task(title: 'Task4', isDone: true, steps: [TaskStep(title: 'Step 1 of Task 4', isDone: false, textEditingController: TextEditingController()),TaskStep(title: 'Step 2 of Task 4', isDone: false, textEditingController: TextEditingController()),TaskStep(title: 'Step 3 of Task 4', isDone: false, textEditingController: TextEditingController()),TaskStep(title: 'Step 4 of Task 4', isDone: false, textEditingController: TextEditingController())]),
-    Task(title: 'Task5', isDone: false, steps: [TaskStep(title: 'Step of Task 5', isDone: false, textEditingController: TextEditingController()), ]),
+    Task(title: 'Task1', isDone: false, steps: [TaskStep(title: 'Step 1 of Task 1', isDone: false, textEditingController: TextEditingController()), TaskStep(title: 'Step 2 of Task 1', isDone: false, textEditingController: TextEditingController()), TaskStep(title: 'Step 3 of Task 1', isDone: false,textEditingController: TextEditingController()), ], id: '2'),
+    Task(title: 'Task2', isDone: true, steps: [TaskStep(title: 'Step of Task 2', isDone: false, textEditingController: TextEditingController()),TaskStep(title: 'Step 2 of Task 2', isDone: false, textEditingController: TextEditingController()), ], id: '324'),
+    Task(title: 'Task3', isDone: false, steps: [TaskStep(title: 'Step of Task 3', isDone: false, textEditingController: TextEditingController())], id: '28'),
+    Task(title: 'Task4', isDone: true, steps: [TaskStep(title: 'Step 1 of Task 4', isDone: false, textEditingController: TextEditingController()),TaskStep(title: 'Step 2 of Task 4', isDone: false, textEditingController: TextEditingController()),TaskStep(title: 'Step 3 of Task 4', isDone: false, textEditingController: TextEditingController()),TaskStep(title: 'Step 4 of Task 4', isDone: false, textEditingController: TextEditingController())], id: '854'),
+    Task(title: 'Task5', isDone: false, steps: [TaskStep(title: 'Step of Task 5', isDone: false, textEditingController: TextEditingController()), ], id: '43'),
   ];
 
-  bool checkBoxValue = false;
-  bool validate = false;
+  bool shouldDoneTaskHidden = false;
   int selectedRadio;
   Color backgroundColor;
 
@@ -90,21 +91,25 @@ class _ListOfTasksState extends State<ListOfTasks> {
                             semanticsLabel: 'Acvvme Logo'))
                   ],
                 )
-              : ListView.builder(
-                  itemCount: getTasks(widget.shouldRemoveDone).length,
-                  itemBuilder: (BuildContext context, index) {
-                    return TaskListItem(
-                      task: getTasks(widget.shouldRemoveDone)[index],
-                      doneSteps: taskList[index].steps.where((step) => step.isDone).toList().length,
-                      totalSteps: taskList[index].steps.length,
-                      onDelete: () {
-                        setState(() {
-                          deleteItem(index);
+              : Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+                children: <Widget>[
+                  Expanded(
+                    child: ListView(
+                      children: getTasks(shouldDoneTaskHidden).map((Task task) {
+                        return TaskListItem(task: task,
+                            doneSteps: task.steps.where((step) => step.isDone).toList().length,
+                            totalSteps: task.steps.length,
+                            onDelete: () {
+                          setState(() {
+                            deleteItem(task);
+                          });
                         });
-                      },
-                    );
-                  },
-                )),
+                      }).toList(),
+                      ),
+                  ),
+                ],
+              )),
     );
   }
 
@@ -221,13 +226,6 @@ class _ListOfTasksState extends State<ListOfTasks> {
     }
   }
 
-  void changeColor(Color color, Color background) {
-    DynamicTheme.of(context).setThemeData(new ThemeData(
-      primaryColor: color,
-    ));
-    backgroundColor = background;
-  }
-
   void setColor(val) {
     switch (val) {
       case 1:
@@ -251,7 +249,14 @@ class _ListOfTasksState extends State<ListOfTasks> {
     }
   }
 
-  setSelectedRadio(int value) {
+  void changeColor(Color color, Color background) {
+    DynamicTheme.of(context).setThemeData(new ThemeData(
+      primaryColor: color,
+    ));
+    backgroundColor = background;
+  }
+
+  void setSelectedRadio(int value) {
     setState(() {
       selectedRadio = value;
     });
@@ -271,18 +276,23 @@ class _ListOfTasksState extends State<ListOfTasks> {
     }
   }
 
-  void deleteItem(int index) {
+  void deleteItem(Task task) {
     setState(() {
-      Task task = getTasks(widget.shouldRemoveDone)[index];
       taskList.remove(task);
     });
     print('Delete');
     print(taskList);
   }
 
+  String generateIdForTask() {
+    final String id = (widget.random.nextInt(1000)).toString();
+    print(id);
+    return id;
+  }
+
   void addItem(String title) {
     setState(() {
-      taskList.add(Task(title: title, isDone: false, steps: []));
+      taskList.add(Task(title: title, isDone: false, steps: [], id: generateIdForTask()));
       textEditingController.clear();
       print(taskList);
     });
@@ -290,7 +300,7 @@ class _ListOfTasksState extends State<ListOfTasks> {
 
   void hideSelectedItems() {
     setState(() {
-      widget.shouldRemoveDone = !widget.shouldRemoveDone;
+      shouldDoneTaskHidden = !shouldDoneTaskHidden;
     });
   }
 
@@ -364,14 +374,13 @@ class TaskListItem extends StatefulWidget {
   int doneSteps;
   int totalSteps;
 
-
-
-  TaskListItem({@required this.task, @required this.onDelete, this.doneSteps, this.totalSteps});
+  TaskListItem({@required this.task, @required this.onDelete, @required this.doneSteps, @required this.totalSteps});
   @override
   _TaskListItemState createState() => _TaskListItemState();
 }
 
 class _TaskListItemState extends State<TaskListItem> {
+
 
   @override
   void initState() {
@@ -382,80 +391,100 @@ class _TaskListItemState extends State<TaskListItem> {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        print('Tap!');
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => DetailScreen(
-                      task: widget.task,
-                      onTaskChanged: (task) {
-                        setState(() {
-                          widget.doneSteps = getDoneSteps(task);
-                          widget.totalSteps = getTotalSteps(task);
-                          widget.task.isDone = task.isDone;
-                          widget.task.title = task.title;
-                        });
-                      },
-                  onDeleteTask: (task) {
-
-                  },
-                    )));
-      },
-      child: Container(
-        margin: const EdgeInsets.all(8),
-        padding: EdgeInsets.only(right: 8, top: 8, bottom: 8),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.white,
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Checkbox(
-              value: widget.task.isDone,
-              onChanged: (newValue) {
-                setState(() {
-                  widget.task.isDone = newValue;
-                });
-              },
+    return Stack(
+      children: <Widget>[
+        Positioned.fill(
+          right: 0,
+          child: Container(
+            alignment: Alignment.centerRight,
+            margin: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(8),
+            child: Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: Icon(
+                Icons.delete,
+                color: Colors.white,
+              ),
             ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: Column(
-                  children: <Widget>[
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(widget.task.title,
-                          textDirection: TextDirection.ltr,
-                          overflow: TextOverflow.ellipsis,
-                          softWrap: true,
-                          maxLines: 6),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Colors.red,
+            ),
+          ),
+        ),
+        Dismissible(
+          key: Key(widget.task.id),
+          child: InkWell(
+            onTap: () {
+              print('Tap!');
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => DetailScreen(
+                        task: widget.task,
+                        onTaskChanged: (task) {
+                          setState(() {
+                            widget.doneSteps = getDoneSteps(task);
+                            widget.totalSteps = getTotalSteps(task);
+                            widget.task.isDone = task.isDone;
+                            widget.task.title = task.title;
+                          });
+                        },
+                        onDeleteTask: (task) {
+                          widget.onDelete();
+                        },
+                      )
+                  )
+              );
+            },
+            child: Container(
+              margin: const EdgeInsets.all(8),
+              padding: EdgeInsets.only(right: 8, top: 8, bottom: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.white,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Checkbox(
+                    value: widget.task.isDone,
+                    onChanged: (newValue) {
+                      setState(() {
+                        widget.task.isDone = newValue;
+                      });
+                    },
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: Column(
+                        children: <Widget>[
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(widget.task.title,
+                                textDirection: TextDirection.ltr,
+                                overflow: TextOverflow.ellipsis,
+                                softWrap: true,
+                                maxLines: 6),
+                          ),
+                          Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                  "${widget.doneSteps} из ${widget.totalSteps}"))
+                        ],
+                      ),
                     ),
-                    Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                            "${widget.doneSteps} из ${widget.totalSteps}"))
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-            SizedBox(
-              width: 40,
-              child: FlatButton(
-                padding: EdgeInsets.all(0),
-                onPressed: widget.onDelete,
-                child: Icon(
-                  Icons.delete,
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
-      ),
+
+      ]
+
     );
   }
 

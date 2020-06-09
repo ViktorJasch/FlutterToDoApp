@@ -157,13 +157,13 @@ class _DetailViewState extends State<DetailView> {
               Column(
                 children: widget.task.steps.map((TaskStep step) {
                   int index = widget.task.steps.indexOf(step);
-                  return ListViewItem(
+                  return StepListItem(
                     textEditingController: step.textEditingController..text = step.title,
                     step: step,
                     onStepChanged: widget.onTaskChanged,
                     onDelete: () {
                       setState(() {
-                        deleteItem(index);
+                        deleteItem(step);
                         widget.onTaskChanged();
                       });
                     },
@@ -222,15 +222,15 @@ class _DetailViewState extends State<DetailView> {
     }
 }
 
-  void deleteItem(int index) {
+  void deleteItem(TaskStep step) {
     setState(() {
-      widget.task.steps.removeAt(index);
+      widget.task.steps.remove(step);
     });
     print(widget.task.steps);
   }
 }
 
-class ListViewItem extends StatefulWidget {
+class StepListItem extends StatefulWidget {
   final stepForm = GlobalKey<FormState>();
   TextEditingController textEditingController;
   final Function onDelete;
@@ -238,13 +238,13 @@ class ListViewItem extends StatefulWidget {
   final TaskStep step;
   bool validate;
 
-  ListViewItem({this.step, this.onDelete, this.onStepChanged, this.textEditingController});
+  StepListItem({this.step, this.onDelete, this.onStepChanged, this.textEditingController});
 
   @override
-  _ListViewItemState createState() => _ListViewItemState();
+  _StepListItemState createState() => _StepListItemState();
 }
 
-class _ListViewItemState extends State<ListViewItem> {
+class _StepListItemState extends State<StepListItem> {
 
   @override
   void initState() {

@@ -6,6 +6,7 @@ class Task {
   String title;
   bool isDone;
   String note;
+  String id;
 
-  Task({this.title, this.isDone, this.steps, this.note});
+  Task({this.title, this.isDone, this.steps, this.note, @required this.id});
 }

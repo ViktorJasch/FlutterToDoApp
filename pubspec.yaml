@@ -23,7 +23,6 @@ environment:
 dependencies:
   flutter_svg: ^0.17.4
   dynamic_theme: ^1.0.1
-  sliver_fab: "^1.0.0"
 
   flutter:
     sdk: flutter

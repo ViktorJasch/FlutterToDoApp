@@ -1,11 +1,9 @@
-import 'package:sliver_fab/sliver_fab.dart';
 import 'package:flutter/material.dart';
 import 'package:todoapp/model/task_step.dart';
 import 'package:todoapp/model/task.dart';
 
 var addStepFormController = TextEditingController();
 var addNoteStepController = TextEditingController();
-var editStepController = TextEditingController();
 var taskNameEditorController = TextEditingController();
 
 class DetailScreen extends StatefulWidget {
@@ -84,7 +82,10 @@ class _DetailViewState extends State<DetailView> {
               floating: false,
               pinned: true,
               snap: false,
-              bottom: buildTaskName(),
+              flexibleSpace: FlexibleSpaceBar(
+                centerTitle: true,
+                title: Text(widget.task.title),
+              ),
               actions: <Widget>[
                 PopupMenuButton(
                   onSelected: selectedItem,
@@ -187,20 +188,18 @@ class _DetailViewState extends State<DetailView> {
       }
     }
 
-    return PreferredSize(
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 16),
-        child: Transform(
-          alignment: Alignment.center,
-          transform: Matrix4.identity()..scale(scale),
-          child: Text(
-            widget.task.title,
-            style: TextStyle(
-                fontSize: 20.0,
-                color: Colors.white,
-                fontFamily: 'Roboto',
-                fontWeight: FontWeight.bold),
-          ),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Transform(
+        alignment: Alignment.center,
+        transform: Matrix4.identity()..scale(scale),
+        child: Text(
+          widget.task.title,
+          style: TextStyle(
+              fontSize: 20.0,
+              color: Colors.white,
+              fontFamily: 'Roboto',
+              fontWeight: FontWeight.bold),
         ),
       ),
     );
@@ -497,7 +496,7 @@ class AddTaskAlertDialog extends StatelessWidget {
         key: formKey,
         child: TextFormField(
           maxLines: null,
-          controller: editStepController,
+          controller: taskNameEditorController,
           validator: (value) {
             if (value.isEmpty) {
               return 'Введите текст';
@@ -513,7 +512,7 @@ class AddTaskAlertDialog extends StatelessWidget {
         FlatButton(
           child: Text('Отмена'),
           onPressed: () {
-            editStepController.clear();
+            taskNameEditorController.clear();
             Navigator.of(context).pop();
           },
         ),
@@ -521,7 +520,7 @@ class AddTaskAlertDialog extends StatelessWidget {
           child: Text('Выбрать'),
           onPressed: () {
             if (formKey.currentState.validate()) {
-              task.title = editStepController.text;
+              task.title = taskNameEditorController.text;
               onEditTaskName();
               Navigator.of(context).pop();
             }

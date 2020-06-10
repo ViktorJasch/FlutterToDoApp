@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:sliver_fab/sliver_fab.dart';
 import 'package:flutter/material.dart';
 import 'package:todoapp/model/task_step.dart';
 import 'package:todoapp/model/task.dart';
@@ -72,106 +72,204 @@ class _DetailViewState extends State<DetailView> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        CustomScrollView(
-          controller: _scrollController,
-          slivers: <Widget>[
-            SliverAppBar(
-              expandedHeight: 128,
-              floating: true,
-              pinned: false,
-              snap: false,
-              bottom: buildTaskName(),
-              actions: <Widget>[
-                PopupMenuButton(
-                  onSelected: selectedItem,
-                  itemBuilder: (BuildContext context) {
-                    return {'Редактировать', 'Удалить'}.map((String choice) {
-                      return PopupMenuItem<String>(
-                        value: choice,
-                        child: Text(choice),
-                      );
-                    }).toList();
-                  },
-                )
-              ],
-            ),
-            SliverList(
-              delegate: SliverChildListDelegate([
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Card(
-                      elevation: 10.0,
-                      margin: EdgeInsets.only(top: 28, left: 16, right: 16),
-                      child: Column(children: <Widget>[
-                        Column(
-                          children: widget.task.steps.map((TaskStep step) {
-                            return StepListItem(
-                              textEditingController: step.textEditingController
-                                ..text = step.title,
-                              step: step,
-                              onStepChanged: widget.onTaskChanged,
-                              onDelete: () {
-                                setState(() {
-                                  deleteItem(step);
-                                  widget.onTaskChanged();
-                                });
-                              },
-                            );
-                          }).toList(),
-                        ),
-                        AddStepButton(
-                          onAddStep: () {
-                            setState(() {
-                              print(widget.task.steps);
-                              widget.task.steps.add(TaskStep(
-                                  title: addStepFormController.text,
-                                  isDone: false,
-                                  textEditingController:
-                                      TextEditingController()));
-                              widget.onTaskChanged();
-                            });
-                          },
-                        ),
-                        const Divider(
-                          color: Colors.black,
-                          height: 0,
-                          thickness: 1,
-                          indent: 16,
-                          endIndent: 16,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 16, right: 16),
-                          child: Form(
-                            key: widget.noteForm,
-                            child: TextFormField(
-                              maxLines: null,
-                              keyboardType: TextInputType.text,
-                              controller: addNoteStepController,
-                              decoration: InputDecoration(
-                                  hintText: 'Заметки по задаче',
-                                  border: InputBorder.none),
-                              onFieldSubmitted: (text) {
-                                setState(() {
-                                  widget.task.note = text;
-                                });
-                              },
-                            ),
-                          ),
-                        )
-                      ]),
-                    )
-                  ],
-                ),
-              ]),
-            ),
-          ],
+    return Builder(
+      builder: (context) =>
+      SliverFab(
+        floatingWidget: FloatingActionButton(
+
         ),
-        buildFab()
-      ],
+        floatingPosition: FloatingPosition(left: 16),
+        expandedHeight: 128,
+        slivers: <Widget>[
+          SliverAppBar(
+            expandedHeight: 128,
+            floating: true,
+            pinned: false,
+            snap: false,
+            bottom: buildTaskName(),
+            actions: <Widget>[
+              PopupMenuButton(
+                onSelected: selectedItem,
+                itemBuilder: (BuildContext context) {
+                  return {'Редактировать', 'Удалить'}.map((String choice) {
+                    return PopupMenuItem<String>(
+                      value: choice,
+                      child: Text(choice),
+                    );
+                  }).toList();
+                },
+              )
+            ],
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate([
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Card(
+                    elevation: 10.0,
+                    margin: EdgeInsets.only(top: 28, left: 16, right: 16),
+                    child: Column(children: <Widget>[
+                      Column(
+                        children: widget.task.steps.map((TaskStep step) {
+                          return StepListItem(
+                            textEditingController: step.textEditingController
+                              ..text = step.title,
+                            step: step,
+                            onStepChanged: widget.onTaskChanged,
+                            onDelete: () {
+                              setState(() {
+                                deleteItem(step);
+                                widget.onTaskChanged();
+                              });
+                            },
+                          );
+                        }).toList(),
+                      ),
+                      AddStepButton(
+                        onAddStep: () {
+                          setState(() {
+                            print(widget.task.steps);
+                            widget.task.steps.add(TaskStep(
+                                title: addStepFormController.text,
+                                isDone: false,
+                                textEditingController:
+                                TextEditingController()));
+                            widget.onTaskChanged();
+                          });
+                        },
+                      ),
+                      const Divider(
+                        color: Colors.black,
+                        height: 0,
+                        thickness: 1,
+                        indent: 16,
+                        endIndent: 16,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16, right: 16),
+                        child: Form(
+                          key: widget.noteForm,
+                          child: TextFormField(
+                            maxLines: null,
+                            keyboardType: TextInputType.text,
+                            controller: addNoteStepController,
+                            decoration: InputDecoration(
+                                hintText: 'Заметки по задаче',
+                                border: InputBorder.none),
+                            onFieldSubmitted: (text) {
+                              setState(() {
+                                widget.task.note = text;
+                              });
+                            },
+                          ),
+                        ),
+                      )
+                    ]),
+                  )
+                ],
+              ),
+            ]),
+          ),
+        ],
+      ),
     );
+//        CustomScrollView(
+//          controller: _scrollController,
+//          slivers: <Widget>[
+//            SliverAppBar(
+//              expandedHeight: 128,
+//              floating: true,
+//              pinned: false,
+//              snap: false,
+//              bottom: buildTaskName(),
+//              actions: <Widget>[
+//                PopupMenuButton(
+//                  onSelected: selectedItem,
+//                  itemBuilder: (BuildContext context) {
+//                    return {'Редактировать', 'Удалить'}.map((String choice) {
+//                      return PopupMenuItem<String>(
+//                        value: choice,
+//                        child: Text(choice),
+//                      );
+//                    }).toList();
+//                  },
+//                )
+//              ],
+//            ),
+//            SliverList(
+//              delegate: SliverChildListDelegate([
+//                Column(
+//                  mainAxisSize: MainAxisSize.min,
+//                  children: <Widget>[
+//                    Card(
+//                      elevation: 10.0,
+//                      margin: EdgeInsets.only(top: 28, left: 16, right: 16),
+//                      child: Column(children: <Widget>[
+//                        Column(
+//                          children: widget.task.steps.map((TaskStep step) {
+//                            return StepListItem(
+//                              textEditingController: step.textEditingController
+//                                ..text = step.title,
+//                              step: step,
+//                              onStepChanged: widget.onTaskChanged,
+//                              onDelete: () {
+//                                setState(() {
+//                                  deleteItem(step);
+//                                  widget.onTaskChanged();
+//                                });
+//                              },
+//                            );
+//                          }).toList(),
+//                        ),
+//                        AddStepButton(
+//                          onAddStep: () {
+//                            setState(() {
+//                              print(widget.task.steps);
+//                              widget.task.steps.add(TaskStep(
+//                                  title: addStepFormController.text,
+//                                  isDone: false,
+//                                  textEditingController:
+//                                      TextEditingController()));
+//                              widget.onTaskChanged();
+//                            });
+//                          },
+//                        ),
+//                        const Divider(
+//                          color: Colors.black,
+//                          height: 0,
+//                          thickness: 1,
+//                          indent: 16,
+//                          endIndent: 16,
+//                        ),
+//                        Padding(
+//                          padding: const EdgeInsets.only(left: 16, right: 16),
+//                          child: Form(
+//                            key: widget.noteForm,
+//                            child: TextFormField(
+//                              maxLines: null,
+//                              keyboardType: TextInputType.text,
+//                              controller: addNoteStepController,
+//                              decoration: InputDecoration(
+//                                  hintText: 'Заметки по задаче',
+//                                  border: InputBorder.none),
+//                              onFieldSubmitted: (text) {
+//                                setState(() {
+//                                  widget.task.note = text;
+//                                });
+//                              },
+//                            ),
+//                          ),
+//                        )
+//                      ]),
+//                    )
+//                  ],
+//                ),
+//              ]),
+//            ),
+//          ],
+//        ),
+//        buildFab()
   }
 
   Widget buildTaskName() {

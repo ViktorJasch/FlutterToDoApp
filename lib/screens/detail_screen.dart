@@ -252,8 +252,6 @@ class _DetailViewState extends State<DetailView> {
           ),
         ),
       );
-
-
   }
 
   String showNotePlaceholder() {
@@ -319,7 +317,6 @@ class _DetailViewState extends State<DetailView> {
 }
 
 class StepListItem extends StatefulWidget {
-  final stepForm = GlobalKey<FormState>();
   TextEditingController textEditingController;
   final Function onDelete;
   final Function onStepChanged;
@@ -336,9 +333,11 @@ class StepListItem extends StatefulWidget {
 }
 
 class _StepListItemState extends State<StepListItem> {
+  GlobalKey<FormState> stepForm;
   @override
   void initState() {
     super.initState();
+    stepForm = GlobalKey<FormState>();
     widget.textEditingController = TextEditingController()
       ..text = widget.step.title;
   }
@@ -360,7 +359,7 @@ class _StepListItemState extends State<StepListItem> {
           ),
           Flexible(
             child: Form(
-              key: widget.stepForm,
+              key: stepForm,
               child: TextFormField(
                 keyboardType: TextInputType.text,
                 maxLines: null,
@@ -373,7 +372,7 @@ class _StepListItemState extends State<StepListItem> {
                 decoration: InputDecoration(border: InputBorder.none),
                 controller: widget.textEditingController,
                 onFieldSubmitted: (text) {
-                  if (widget.stepForm.currentState.validate()) {
+                  if (stepForm.currentState.validate()) {
                     setState(() {
                       widget.step.title = text;
                       print(widget.step.title);

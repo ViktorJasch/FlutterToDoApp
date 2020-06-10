@@ -167,9 +167,9 @@ class _DetailViewState extends State<DetailView> {
                 ),
               ]),
             ),
+            buildFab()
           ],
         ),
-        buildFab()
       ],
     );
   }
@@ -243,6 +243,7 @@ class _DetailViewState extends State<DetailView> {
         transform: new Matrix4.identity()..scale(scale, scale),
         alignment: Alignment.center,
         child: FloatingActionButton(
+          backgroundColor: Color(0xFF01A39D),
             child: showIcon(),
           onPressed: () {
               setState(() {

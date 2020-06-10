@@ -55,6 +55,7 @@ class DetailView extends StatefulWidget {
 
 class _DetailViewState extends State<DetailView> {
   ScrollController _scrollController;
+  bool isKeyboardShow;
 
   @override
   void initState() {
@@ -62,6 +63,7 @@ class _DetailViewState extends State<DetailView> {
     addNoteStepController = TextEditingController()..text = widget.task.note;
     _scrollController = ScrollController();
     _scrollController.addListener(() => setState(() {}));
+    isKeyboardShow = false;
   }
 
   @override
@@ -79,8 +81,8 @@ class _DetailViewState extends State<DetailView> {
           slivers: <Widget>[
             SliverAppBar(
               expandedHeight: 128,
-              floating: true,
-              pinned: false,
+              floating: false,
+              pinned: true,
               snap: false,
               bottom: buildTaskName(),
               actions: <Widget>[
@@ -99,77 +101,72 @@ class _DetailViewState extends State<DetailView> {
             ),
             SliverList(
               delegate: SliverChildListDelegate([
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Card(
-                      elevation: 10.0,
-                      margin: EdgeInsets.only(top: 28, left: 16, right: 16),
-                      child: Column(children: <Widget>[
-                        Column(
-                          children: widget.task.steps.map((TaskStep step) {
-                            return StepListItem(
-                              textEditingController: step.textEditingController
-                                ..text = step.title,
-                              step: step,
-                              onStepChanged: widget.onTaskChanged,
-                              onDelete: () {
-                                setState(() {
-                                  deleteItem(step);
-                                  widget.onTaskChanged();
-                                });
-                              },
-                            );
-                          }).toList(),
-                        ),
-                        AddStepButton(
-                          onAddStep: () {
+                Card(
+                  elevation: 10.0,
+                  margin: EdgeInsets.only(top: 28, left: 16, right: 16),
+                  child: Column(children: <Widget>[
+                    Column(
+                      children: widget.task.steps.map((TaskStep step) {
+                        return StepListItem(
+                          textEditingController: step.textEditingController
+                            ..text = step.title,
+                          step: step,
+                          onStepChanged: widget.onTaskChanged,
+                          onDelete: () {
                             setState(() {
-                              print(widget.task.steps);
-                              widget.task.steps.add(TaskStep(
-                                  title: addStepFormController.text,
-                                  isDone: false,
-                                  textEditingController:
-                                      TextEditingController()));
+                              deleteItem(step);
                               widget.onTaskChanged();
                             });
                           },
+                        );
+                      }).toList(),
+                    ),
+                    AddStepButton(isKeyboardShow: isKeyboardShow,
+                      onAddStep: () {
+                        setState(() {
+                          print(widget.task.steps);
+                          widget.task.steps.add(TaskStep(
+                              title: addStepFormController.text,
+                              isDone: false,
+                              textEditingController:
+                                  TextEditingController()));
+                          widget.onTaskChanged();
+                        });
+                      },
+                    ),
+                    const Divider(
+                      color: Colors.black,
+                      height: 0,
+                      thickness: 1,
+                      indent: 16,
+                      endIndent: 16,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16, right: 16),
+                      child: Form(
+                        key: widget.noteForm,
+                        child: TextFormField(
+                          maxLines: null,
+                          keyboardType: TextInputType.text,
+                          controller: addNoteStepController,
+                          decoration: InputDecoration(
+                              hintText: 'Заметки по задаче',
+                              border: InputBorder.none),
+                          onFieldSubmitted: (text) {
+                            setState(() {
+                              widget.task.note = text;
+                            });
+                          },
                         ),
-                        const Divider(
-                          color: Colors.black,
-                          height: 0,
-                          thickness: 1,
-                          indent: 16,
-                          endIndent: 16,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 16, right: 16),
-                          child: Form(
-                            key: widget.noteForm,
-                            child: TextFormField(
-                              maxLines: null,
-                              keyboardType: TextInputType.text,
-                              controller: addNoteStepController,
-                              decoration: InputDecoration(
-                                  hintText: 'Заметки по задаче',
-                                  border: InputBorder.none),
-                              onFieldSubmitted: (text) {
-                                setState(() {
-                                  widget.task.note = text;
-                                });
-                              },
-                            ),
-                          ),
-                        )
-                      ]),
+                      ),
                     )
-                  ],
+                  ]),
                 ),
               ]),
             ),
-            buildFab()
           ],
         ),
+        buildFab()
       ],
     );
   }
@@ -212,48 +209,51 @@ class _DetailViewState extends State<DetailView> {
   }
 
   Widget buildFab() {
-    final double defaultFabSize = 56.0;
-    final double paddingTop = MediaQuery
-        .of(context)
-        .padding
-        .top;
-    final double defaultTopMargin = 124;
+      final double defaultFabSize = 56.0;
+      final double paddingTop = MediaQuery
+          .of(context)
+          .padding
+          .top;
+      final double defaultTopMargin = 124;
 
-    final double scale0edge = 128 - kToolbarHeight;
-    final double scale1edge = defaultTopMargin - 96;
+      final double scale0edge = 128 - kToolbarHeight;
+      final double scale1edge = defaultTopMargin - 96;
 
-    double top = defaultTopMargin;
-    double scale = 1.0;
-    if (_scrollController.hasClients) {
-      double offset = _scrollController.offset;
-      top -= offset > 0 ? offset : 0;
-      if (offset < scale1edge) {
-        scale = 1.0;
-      } else if (offset > scale0edge) {
-        scale = 0.0;
-      } else {
-        scale = (scale0edge - offset) / (scale0edge - scale1edge);
-      }
-    };
+      double top = defaultTopMargin;
+      double scale = 1.0;
 
-    return Positioned(
-      top: top,
-      left: 16,
-      child: new Transform(
-        transform: new Matrix4.identity()..scale(scale, scale),
-        alignment: Alignment.center,
-        child: FloatingActionButton(
-          backgroundColor: Color(0xFF01A39D),
+      if (_scrollController.hasClients) {
+        double offset = _scrollController.offset;
+        top -= offset > 0 ? offset : 0;
+        if (offset < scale1edge) {
+          scale = 1.0;
+        } else if (offset > scale0edge) {
+          scale = 0.0;
+        } else {
+          scale = (scale0edge - offset) / (scale0edge - scale1edge);
+        }
+      };
+
+      return Positioned(
+        top: top,
+        left: 16,
+        child: new Transform(
+          transform: new Matrix4.identity()..scale(scale, scale),
+          alignment: Alignment.center,
+          child: FloatingActionButton(
+            backgroundColor: Color(0xFF01A39D),
             child: showIcon(),
-          onPressed: () {
+            onPressed: () {
               setState(() {
                 changeStatusOfTask();
                 widget.onTaskChanged();
               });
-          },
+            },
+          ),
         ),
-      ),
-    );
+      );
+
+
   }
 
   String showNotePlaceholder() {
@@ -400,10 +400,11 @@ class _StepListItemState extends State<StepListItem> {
 }
 
 class AddStepButton extends StatefulWidget {
-  final addStepForm = GlobalKey<FormState>();
+  static final addStepForm = GlobalKey<FormState>();
   final Function onAddStep;
+  bool isKeyboardShow;
 
-  AddStepButton({@required this.onAddStep});
+  AddStepButton({@required this.onAddStep, @required this.isKeyboardShow});
 
   @override
   _AddStepButtonState createState() => _AddStepButtonState();
@@ -441,6 +442,7 @@ class _AddStepButtonState extends State<AddStepButton> {
         FlatButton(
           child: Text('+  Добавить шаг'),
           onPressed: () {
+            widget.isKeyboardShow = true;
             setState(() {
               shouldShowTextField = !shouldShowTextField
                   ? shouldShowTextField = true
@@ -457,7 +459,7 @@ class _AddStepButtonState extends State<AddStepButton> {
     return Padding(
       padding: const EdgeInsets.only(left: 16, right: 16),
       child: Form(
-        key: widget.addStepForm,
+        key: AddStepButton.addStepForm,
         child: TextFormField(
           focusNode: myFocusNode,
           maxLines: null,
@@ -466,6 +468,7 @@ class _AddStepButtonState extends State<AddStepButton> {
           onFieldSubmitted: (value) {
             if (value.isNotEmpty) {
               setState(() {
+                widget.isKeyboardShow = false;
                 widget.onAddStep();
                 shouldShowTextField = !shouldShowTextField;
                 addStepFormController.clear();

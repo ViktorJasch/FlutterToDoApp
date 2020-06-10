@@ -108,8 +108,6 @@ class _DetailViewState extends State<DetailView> {
                     Column(
                       children: widget.task.steps.map((TaskStep step) {
                         return StepListItem(
-                          textEditingController: step.textEditingController
-                            ..text = step.title,
                           step: step,
                           onStepChanged: widget.onTaskChanged,
                           onDelete: () {
@@ -326,7 +324,7 @@ class StepListItem extends StatefulWidget {
       {this.step,
       this.onDelete,
       this.onStepChanged,
-      this.textEditingController});
+      });
 
   @override
   _StepListItemState createState() => _StepListItemState();

@@ -217,7 +217,7 @@ class _DetailViewState extends State<DetailView> {
         .of(context)
         .padding
         .top;
-    final double defaultTopMargin = 128;
+    final double defaultTopMargin = 124;
 
     final double scale0edge = 128 - kToolbarHeight;
     final double scale1edge = defaultTopMargin - 96;
@@ -243,7 +243,13 @@ class _DetailViewState extends State<DetailView> {
         transform: new Matrix4.identity()..scale(scale, scale),
         alignment: Alignment.center,
         child: FloatingActionButton(
-
+            child: showIcon(),
+          onPressed: () {
+              setState(() {
+                changeStatusOfTask();
+                widget.onTaskChanged();
+              });
+          },
         ),
       ),
     );

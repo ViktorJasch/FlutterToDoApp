@@ -232,6 +232,9 @@ class _DetailViewState extends State<DetailView> {
                       )
                     ],
                   ),
+                ),
+                SizedBox(
+                  height: 28,
                 )
               ]),
             ),

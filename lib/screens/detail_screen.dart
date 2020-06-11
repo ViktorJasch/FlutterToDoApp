@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 var addStepFormController = TextEditingController();
 var addNoteStepController = TextEditingController();
 var taskNameEditorController = TextEditingController();
+MyGlobals myGlobals = new MyGlobals();
 
 class DetailScreen extends StatefulWidget {
   final Function(Task task) onTaskChanged;
@@ -24,6 +25,7 @@ class _DetailScreenState extends State<DetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: myGlobals.scaffoldKey,
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.indigo[100],
       body: DetailView(
@@ -641,7 +643,7 @@ class DateSelectorDialog extends StatelessWidget {
               if (platform == TargetPlatform.android) {
                 selectDate(context);
               } else if (platform == TargetPlatform.iOS) {
-                showCupertinoDatePicker(context);
+              showCupertinoDatePicker();
               }
             },
           ),
@@ -662,12 +664,12 @@ class DateSelectorDialog extends StatelessWidget {
     }
   }
 
-  showCupertinoDatePicker(BuildContext context) {
-    showModalBottomSheet(
-        context: context,
+  Future showCupertinoDatePicker() async {
+   return showModalBottomSheet(
+        context: myGlobals.scaffoldKey.currentContext,
         builder: (BuildContext builder) {
           return Container(
-            height: MediaQuery.of(context).copyWith().size.width / 3,
+            height: MediaQuery.of(myGlobals.scaffoldKey.currentContext).copyWith().size.width / 3,
             child: CupertinoDatePicker(
               initialDateTime: DateTime.now(),
               onDateTimeChanged: (DateTime date) {
@@ -694,4 +696,12 @@ class ToDoDivider extends StatelessWidget {
       endIndent: 0,
     );
   }
+}
+
+class MyGlobals {
+  GlobalKey _scaffoldKey;
+  MyGlobals() {
+    _scaffoldKey = GlobalKey();
+  }
+  GlobalKey get scaffoldKey => _scaffoldKey;
 }

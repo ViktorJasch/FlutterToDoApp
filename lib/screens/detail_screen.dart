@@ -650,43 +650,68 @@ class DateSelectorDialog extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          FlatButton(
-            child: Text('Сегодня', style: TextStyle(color: Constants.stepTaskColor)),
-            onPressed: () {
-              Navigator.pop(context);
-              final date = DateFormat('dd.mm.yy').format(DateTime.now());
-              onDateSet(date);
-            },
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Expanded(
+                child: FlatButton(
+                  child: Align(alignment: Alignment.centerLeft, child: Text('Сегодня', style: TextStyle(color: Constants.stepTaskColor))),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    final date = DateFormat('dd.MM.yy').format(DateTime.now());
+                    onDateSet(date);
+                  },
+                ),
+              ),
+            ],
           ),
-          FlatButton(
-            child: Text('Завтра', style: TextStyle(color: Constants.stepTaskColor),),
-            onPressed: () {
-              Navigator.pop(context);
-              final tomorrow = DateTime.now().add(Duration(days: 1));
-              final date = DateFormat('dd.mm.yy').format(tomorrow);
-              onDateSet(date);
-            },
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: FlatButton(
+                  child: Align(alignment: Alignment.centerLeft, child: Text('Завтра', style: TextStyle(color: Constants.stepTaskColor),)),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    final tomorrow = DateTime.now().add(Duration(days: 1));
+                    final date = DateFormat('dd.MM.yy').format(tomorrow);
+                    onDateSet(date);
+                  },
+                ),
+              ),
+            ],
           ),
-          FlatButton(
-            child: Text('На следующей неделе', style: TextStyle(color: Constants.stepTaskColor)),
-            onPressed: () {
-              Navigator.pop(context);
-              final tomorrow = DateTime.now().add(Duration(days: 7));
-              final date = DateFormat('dd.mm.yy').format(tomorrow);
-              onDateSet(date);
-            },
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: FlatButton(
+                  child: Align(alignment: Alignment.centerLeft,child: Text('На следующей неделе', style: TextStyle(color: Constants.stepTaskColor))),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    final tomorrow = DateTime.now().add(Duration(days: 7));
+                    final date = DateFormat('dd.MM.yy').format(tomorrow);
+                    onDateSet(date);
+                  },
+                ),
+              ),
+            ],
           ),
-          FlatButton(
-            child: Text('Выбрать дату и время', style: TextStyle(color: Constants.stepTaskColor)),
-            onPressed: () {
-              Navigator.pop(context);
-              var platform = Theme.of(context).platform;
-              if (platform == TargetPlatform.android) {
-                selectDate(context);
-              } else if (platform == TargetPlatform.iOS) {
-              showCupertinoDatePicker();
-              }
-            },
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: FlatButton(
+                  child: Align(alignment: Alignment.centerLeft,child: Text('Выбрать дату и время', style: TextStyle(color: Constants.stepTaskColor))),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    var platform = Theme.of(context).platform;
+                    if (platform == TargetPlatform.android) {
+                      selectDate(context);
+                    } else if (platform == TargetPlatform.iOS) {
+                    showCupertinoDatePicker();
+                    }
+                  },
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -710,7 +735,7 @@ class DateSelectorDialog extends StatelessWidget {
         context: myGlobals.scaffoldKey.currentContext,
         builder: (BuildContext builder) {
           return Container(
-            height: MediaQuery.of(myGlobals.scaffoldKey.currentContext).copyWith().size.width / 3,
+            height: MediaQuery.of(myGlobals.scaffoldKey.currentContext).copyWith().size.width / 2,
             child: CupertinoDatePicker(
               initialDateTime: DateTime.now(),
               onDateTimeChanged: (DateTime date) {

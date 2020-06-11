@@ -277,8 +277,6 @@ class _DetailViewState extends State<DetailView> {
   }
 
   Widget buildFab() {
-    final double defaultFabSize = 56.0;
-    final double paddingTop = MediaQuery.of(context).padding.top;
     final double defaultTopMargin = 124;
 
     final double scale0edge = 128 - kToolbarHeight;
@@ -344,11 +342,6 @@ class _DetailViewState extends State<DetailView> {
     }
   }
 
-  void deleteTask() {
-    Navigator.pop(context);
-    widget.onTaskDelete();
-  }
-
   Future showEditNameTaskDialog(BuildContext context) {
     return showDialog(
         context: context,
@@ -375,13 +368,29 @@ class _DetailViewState extends State<DetailView> {
         });
   }
 
+  Future showConfirmDialog(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return ConfirmDeleteTaskDialog(
+          onDeleteTaskFromConfirmDialog: () {
+            setState(() {
+              Navigator.pop(context);
+              widget.onTaskDelete();
+            });
+          }
+        );
+      }
+    );
+  }
+
   void selectedItem(String value) {
     switch (value) {
       case 'Редактировать':
         showEditNameTaskDialog(context);
         break;
       case 'Удалить':
-        deleteTask();
+        showConfirmDialog(context);
         break;
     }
   }
@@ -636,24 +645,39 @@ class DateSelectorDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      contentPadding: EdgeInsets.all(0),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           FlatButton(
-            child: Text('Cегодня'),
-            onPressed: () {},
+            child: Text('Сегодня', style: TextStyle(color: Constants.stepTaskColor)),
+            onPressed: () {
+              Navigator.pop(context);
+              final date = DateFormat('dd.mm.yy').format(DateTime.now());
+              onDateSet(date);
+            },
           ),
           FlatButton(
-            child: Text('Завтра'),
-            onPressed: () {},
+            child: Text('Завтра', style: TextStyle(color: Constants.stepTaskColor),),
+            onPressed: () {
+              Navigator.pop(context);
+              final tomorrow = DateTime.now().add(Duration(days: 1));
+              final date = DateFormat('dd.mm.yy').format(tomorrow);
+              onDateSet(date);
+            },
           ),
           FlatButton(
-            child: Text('На следующей неделе'),
-            onPressed: () {},
+            child: Text('На следующей неделе', style: TextStyle(color: Constants.stepTaskColor)),
+            onPressed: () {
+              Navigator.pop(context);
+              final tomorrow = DateTime.now().add(Duration(days: 7));
+              final date = DateFormat('dd.mm.yy').format(tomorrow);
+              onDateSet(date);
+            },
           ),
           FlatButton(
-            child: Text('Выбрать дату и время'),
+            child: Text('Выбрать дату и время', style: TextStyle(color: Constants.stepTaskColor)),
             onPressed: () {
               Navigator.pop(context);
               var platform = Theme.of(context).platform;
@@ -714,6 +738,34 @@ class ToDoDivider extends StatelessWidget {
     );
   }
 }
+
+class ConfirmDeleteTaskDialog extends StatelessWidget {
+  final Function onDeleteTaskFromConfirmDialog;
+
+  ConfirmDeleteTaskDialog({this.onDeleteTaskFromConfirmDialog});
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Вы действительно хотите удалить это задание?'),
+      actions: <Widget>[
+        FlatButton(
+          child: Text('Отмена'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        FlatButton(
+          child: Text('Удалить'),
+          onPressed: () {
+            Navigator.pop(context);
+              onDeleteTaskFromConfirmDialog();
+          },
+        )
+      ],
+    );
+  }
+}
+
 
 class MyGlobals {
   GlobalKey _scaffoldKey;

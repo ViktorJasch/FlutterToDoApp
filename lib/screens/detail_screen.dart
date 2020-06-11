@@ -112,9 +112,12 @@ class _DetailViewState extends State<DetailView> {
                   margin: EdgeInsets.only(top: 28, left: 16, right: 16),
                   child: Column(children: <Widget>[
                     Padding(
-                      padding: const EdgeInsets.only(left: 28, top: 4),
+                      padding: const EdgeInsets.only(left: 16, top: 8),
                       child: Container(
-                        child: Text('Создано: ${widget.task.creationDate}'),
+                        child: Text('Создано: ${widget.task.creationDate}',
+                        style: TextStyle(
+                          color: Constants.stepTaskColor
+                        ),),
                         alignment: Alignment.centerLeft,
                       ),
                     ),
@@ -145,12 +148,12 @@ class _DetailViewState extends State<DetailView> {
                         });
                       },
                     ),
-                    const Divider(
-                      color: Colors.black,
+                     Divider(
+                      color: Constants.stepTaskColor,
                       height: 0,
                       thickness: 1,
-                      indent: 16,
-                      endIndent: 16,
+                      indent: 26,
+                      endIndent: 26,
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 16, right: 16),
@@ -212,14 +215,17 @@ class _DetailViewState extends State<DetailView> {
                               Icons.calendar_today,
                               color: Constants.stepTaskColor,
                             ),
-                            FlatButton(
-                              textColor: Constants.stepTaskColor,
-                              child: widget.task.deadlineDate == null
-                                  ? Text('Добавить дату выполнения')
-                                  : Text(widget.task.deadlineDate),
-                              onPressed: () {
-                                showSelectDateDialog(context);
-                              },
+                            SizedBox(
+                              height: 25,
+                              child: FlatButton(
+                                textColor: Constants.stepTaskColor,
+                                child: widget.task.deadlineDate == null
+                                    ? Text('Добавить дату выполнения')
+                                    : Text(widget.task.deadlineDate),
+                                onPressed: () {
+                                  showSelectDateDialog(context);
+                                },
+                              ),
                             )
                           ],
                         ),
@@ -421,16 +427,23 @@ class _StepListItemState extends State<StepListItem> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          Checkbox(
-            activeColor: Color(0xFF6202EE),
-            checkColor: Colors.white,
-            value: widget.step.isDone,
-            onChanged: (bool value) {
-              setState(() {
-                widget.step.isDone = value;
-                widget.onStepChanged();
-              });
-            },
+          SizedBox(
+            height: 20,
+            width: 20,
+            child: Checkbox(
+              activeColor: Color(0xFF6202EE),
+              checkColor: Colors.white,
+              value: widget.step.isDone,
+              onChanged: (bool value) {
+                setState(() {
+                  widget.step.isDone = value;
+                  widget.onStepChanged();
+                });
+              },
+            ),
+          ),
+          SizedBox(
+            width: 9,
           ),
           Flexible(
             child: Form(
@@ -459,7 +472,7 @@ class _StepListItemState extends State<StepListItem> {
             ),
           ),
           SizedBox(
-            width: 40,
+            width: 20,
             child: FlatButton(
               padding: EdgeInsets.all(0),
               onPressed: widget.onDelete,
@@ -511,23 +524,27 @@ class _AddStepButtonState extends State<AddStepButton> {
   }
 
   Widget buildAddStepButton(BuildContext context) {
-    return ButtonBar(
-      layoutBehavior: ButtonBarLayoutBehavior.constrained,
-      alignment: MainAxisAlignment.start,
-      children: <Widget>[
-        FlatButton(
-          child: Text('+  Добавить шаг'),
-          onPressed: () {
-            widget.isKeyboardShow = true;
-            setState(() {
-              shouldShowTextField = !shouldShowTextField
-                  ? shouldShowTextField = true
-                  : shouldShowTextField = false;
-            });
-            myFocusNode.requestFocus();
-          },
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.only(left: 6),
+      child: ButtonBar(
+        layoutBehavior: ButtonBarLayoutBehavior.constrained,
+        alignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Icon(Icons.add, color: Color(0xFF1A9FFF)),
+          FlatButton(
+            child: Text('Добавить шаг'),
+            onPressed: () {
+              widget.isKeyboardShow = true;
+              setState(() {
+                shouldShowTextField = !shouldShowTextField
+                    ? shouldShowTextField = true
+                    : shouldShowTextField = false;
+              });
+              myFocusNode.requestFocus();
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -688,8 +705,8 @@ class DateSelectorDialog extends StatelessWidget {
 class ToDoDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const Divider(
-      color: Colors.black,
+    return Divider(
+      color: Constants.stepTaskColor,
       height: 0,
       thickness: 1,
       indent: 56,

@@ -7,6 +7,8 @@ class Task {
   bool isDone;
   String note;
   String id;
+  String creationDate;
+  String deadlineDate;
 
-  Task({this.title, this.isDone, this.steps, this.note, @required this.id});
+  Task({@required this.title, @required this.isDone, @required this.steps, @required this.note, @required this.id, @required this.creationDate, @required this.deadlineDate});
 }

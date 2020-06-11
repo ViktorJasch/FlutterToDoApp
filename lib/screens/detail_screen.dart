@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:todoapp/helpers/constants.dart';
 import 'package:todoapp/model/task_step.dart';
 import 'package:todoapp/model/task.dart';
+import 'package:flutter/cupertino.dart';
 
 var addStepFormController = TextEditingController();
 var addNoteStepController = TextEditingController();
@@ -106,6 +109,13 @@ class _DetailViewState extends State<DetailView> {
                   elevation: 10.0,
                   margin: EdgeInsets.only(top: 28, left: 16, right: 16),
                   child: Column(children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(left: 28, top: 4),
+                      child: Container(
+                        child: Text('Создано: ${widget.task.creationDate}'),
+                        alignment: Alignment.centerLeft,
+                      ),
+                    ),
                     Column(
                       children: widget.task.steps.map((TaskStep step) {
                         return StepListItem(
@@ -120,15 +130,15 @@ class _DetailViewState extends State<DetailView> {
                         );
                       }).toList(),
                     ),
-                    AddStepButton(isKeyboardShow: isKeyboardShow,
+                    AddStepButton(
+                      isKeyboardShow: isKeyboardShow,
                       onAddStep: () {
                         setState(() {
                           print(widget.task.steps);
                           widget.task.steps.add(TaskStep(
                               title: addStepFormController.text,
                               isDone: false,
-                              textEditingController:
-                                  TextEditingController()));
+                              textEditingController: TextEditingController()));
                           widget.onTaskChanged();
                         });
                       },
@@ -161,6 +171,60 @@ class _DetailViewState extends State<DetailView> {
                     )
                   ]),
                 ),
+                Card(
+                  elevation: 10.0,
+                  margin: EdgeInsets.only(left: 16, right: 16, top: 16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.only(left: 16, top: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Icon(
+                              Icons.add_alert,
+                              color: Constants.stepTaskColor,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 16),
+                              child: Text(
+                                'Напомнить',
+                                style:
+                                    TextStyle(color: Constants.stepTaskColor),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8, bottom: 8),
+                        child: ToDoDivider(),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: 16, bottom: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Icon(
+                              Icons.calendar_today,
+                              color: Constants.stepTaskColor,
+                            ),
+                            FlatButton(
+                              textColor: Constants.stepTaskColor,
+                              child: widget.task.deadlineDate == null
+                                  ? Text('Добавить дату выполнения')
+                                  : Text(widget.task.deadlineDate),
+                              onPressed: () {
+                                showSelectDateDialog(context);
+                              },
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                )
               ]),
             ),
           ],
@@ -171,7 +235,6 @@ class _DetailViewState extends State<DetailView> {
   }
 
   Widget buildTaskName() {
-
     double top = 124.0;
     double scaleStart = top;
     double scaleEnd = scaleStart * 0.5;
@@ -206,49 +269,47 @@ class _DetailViewState extends State<DetailView> {
   }
 
   Widget buildFab() {
-      final double defaultFabSize = 56.0;
-      final double paddingTop = MediaQuery
-          .of(context)
-          .padding
-          .top;
-      final double defaultTopMargin = 124;
+    final double defaultFabSize = 56.0;
+    final double paddingTop = MediaQuery.of(context).padding.top;
+    final double defaultTopMargin = 124;
 
-      final double scale0edge = 128 - kToolbarHeight;
-      final double scale1edge = defaultTopMargin - 96;
+    final double scale0edge = 128 - kToolbarHeight;
+    final double scale1edge = defaultTopMargin - 96;
 
-      double top = defaultTopMargin;
-      double scale = 1.0;
+    double top = defaultTopMargin;
+    double scale = 1.0;
 
-      if (_scrollController.hasClients) {
-        double offset = _scrollController.offset;
-        top -= offset > 0 ? offset : 0;
-        if (offset < scale1edge) {
-          scale = 1.0;
-        } else if (offset > scale0edge) {
-          scale = 0.0;
-        } else {
-          scale = (scale0edge - offset) / (scale0edge - scale1edge);
-        }
-      };
+    if (_scrollController.hasClients) {
+      double offset = _scrollController.offset;
+      top -= offset > 0 ? offset : 0;
+      if (offset < scale1edge) {
+        scale = 1.0;
+      } else if (offset > scale0edge) {
+        scale = 0.0;
+      } else {
+        scale = (scale0edge - offset) / (scale0edge - scale1edge);
+      }
+    }
+    ;
 
-      return Positioned(
-        top: top,
-        left: 16,
-        child: new Transform(
-          transform: new Matrix4.identity()..scale(scale, scale),
-          alignment: Alignment.center,
-          child: FloatingActionButton(
-            backgroundColor: Color(0xFF01A39D),
-            child: showIcon(),
-            onPressed: () {
-              setState(() {
-                changeStatusOfTask();
-                widget.onTaskChanged();
-              });
-            },
-          ),
+    return Positioned(
+      top: top,
+      left: 16,
+      child: new Transform(
+        transform: new Matrix4.identity()..scale(scale, scale),
+        alignment: Alignment.center,
+        child: FloatingActionButton(
+          backgroundColor: Color(0xFF01A39D),
+          child: showIcon(),
+          onPressed: () {
+            setState(() {
+              changeStatusOfTask();
+              widget.onTaskChanged();
+            });
+          },
         ),
-      );
+      ),
+    );
   }
 
   String showNotePlaceholder() {
@@ -280,11 +341,11 @@ class _DetailViewState extends State<DetailView> {
     widget.onTaskDelete();
   }
 
-  Future displayDialog(BuildContext context) {
+  Future showEditNameTaskDialog(BuildContext context) {
     return showDialog(
         context: context,
         builder: (context) {
-          return AddTaskAlertDialog(
+          return EditNameTaskAlertDialog(
               task: widget.task,
               onEditTaskName: () {
                 setState(() {
@@ -294,10 +355,22 @@ class _DetailViewState extends State<DetailView> {
         });
   }
 
+  Future showSelectDateDialog(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return DateSelectorDialog(onDateSet: (date) {
+            setState(() {
+              widget.task.deadlineDate = date;
+            });
+          });
+        });
+  }
+
   void selectedItem(String value) {
     switch (value) {
       case 'Редактировать':
-        displayDialog(context);
+        showEditNameTaskDialog(context);
         break;
       case 'Удалить':
         deleteTask();
@@ -319,11 +392,11 @@ class StepListItem extends StatefulWidget {
   final Function onStepChanged;
   final TaskStep step;
 
-  StepListItem(
-      {this.step,
-      this.onDelete,
-      this.onStepChanged,
-      });
+  StepListItem({
+    this.step,
+    this.onDelete,
+    this.onStepChanged,
+  });
 
   @override
   _StepListItemState createState() => _StepListItemState();
@@ -331,6 +404,7 @@ class StepListItem extends StatefulWidget {
 
 class _StepListItemState extends State<StepListItem> {
   GlobalKey<FormState> stepForm;
+
   @override
   void initState() {
     super.initState();
@@ -346,6 +420,8 @@ class _StepListItemState extends State<StepListItem> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           Checkbox(
+            activeColor: Color(0xFF6202EE),
+            checkColor: Colors.white,
             value: widget.step.isDone,
             onChanged: (bool value) {
               setState(() {
@@ -358,6 +434,7 @@ class _StepListItemState extends State<StepListItem> {
             child: Form(
               key: stepForm,
               child: TextFormField(
+                style: TextStyle(color: Constants.stepTaskColor),
                 keyboardType: TextInputType.text,
                 maxLines: null,
                 validator: (value) {
@@ -386,6 +463,7 @@ class _StepListItemState extends State<StepListItem> {
               onPressed: widget.onDelete,
               child: Icon(
                 Icons.close,
+                color: Constants.stepTaskColor,
               ),
             ),
           ),
@@ -481,12 +559,12 @@ class _AddStepButtonState extends State<AddStepButton> {
   }
 }
 
-class AddTaskAlertDialog extends StatelessWidget {
+class EditNameTaskAlertDialog extends StatelessWidget {
   final Function onEditTaskName;
   final Task task;
   final formKey = GlobalKey<FormState>();
 
-  AddTaskAlertDialog({@required this.onEditTaskName, @required this.task});
+  EditNameTaskAlertDialog({@required this.onEditTaskName, @required this.task});
 
   @override
   Widget build(BuildContext context) {
@@ -527,6 +605,93 @@ class AddTaskAlertDialog extends StatelessWidget {
           },
         )
       ],
+    );
+  }
+}
+
+class DateSelectorDialog extends StatelessWidget {
+  final Function(String date) onDateSet;
+
+  DateSelectorDialog({@required this.onDateSet});
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          FlatButton(
+            child: Text('Cегодня'),
+            onPressed: () {},
+          ),
+          FlatButton(
+            child: Text('Завтра'),
+            onPressed: () {},
+          ),
+          FlatButton(
+            child: Text('На следующей неделе'),
+            onPressed: () {},
+          ),
+          FlatButton(
+            child: Text('Выбрать дату и время'),
+            onPressed: () {
+              Navigator.pop(context);
+              var platform = Theme.of(context).platform;
+              if (platform == TargetPlatform.android) {
+                selectDate(context);
+              } else if (platform == TargetPlatform.iOS) {
+                showCupertinoDatePicker(context);
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> selectDate(BuildContext context) async {
+    final date = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2020),
+        lastDate: DateTime(2050));
+    if (date != null) {
+      final formattedDate = DateFormat('dd.MM.yyyy').format(date);
+      onDateSet(formattedDate);
+    }
+  }
+
+  showCupertinoDatePicker(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext builder) {
+          return Container(
+            height: MediaQuery.of(context).copyWith().size.width / 3,
+            child: CupertinoDatePicker(
+              initialDateTime: DateTime.now(),
+              onDateTimeChanged: (DateTime date) {
+                final formattedDate = DateFormat('dd.MM.yyyy').format(date);
+                onDateSet(formattedDate);
+              },
+              maximumYear: 2050,
+              minimumYear: 2020,
+              mode: CupertinoDatePickerMode.date,
+            ),
+          );
+        });
+  }
+}
+
+class ToDoDivider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return const Divider(
+      color: Colors.black,
+      height: 0,
+      thickness: 1,
+      indent: 56,
+      endIndent: 0,
     );
   }
 }

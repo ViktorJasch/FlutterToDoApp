@@ -1,5 +1,6 @@
 import 'dart:math';
-
+import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:todoapp/model/task_step.dart';
 import 'package:todoapp/screens/detail_screen.dart';
@@ -288,12 +289,19 @@ class _ListOfTasksState extends State<ListOfTasks> {
     return id;
   }
 
-  void addItem(String title) {
+  void addTask(String title) {
     setState(() {
-      taskList.add(Task(title: title, isDone: false, steps: [], id: generateIdForTask()));
+      taskList.add(Task(title: title, isDone: false, steps: [], id: generateIdForTask(), creationDate: getCurrentTime()));
       textEditingController.clear();
       print(taskList);
     });
+  }
+
+  String getCurrentTime() {
+    DateTime now = DateTime.now();
+    DateFormat formatter = DateFormat('dd.MM.yyyy');
+    String currentDate = formatter.format(now);
+    return currentDate;
   }
 
   void hideSelectedItems() {
@@ -312,7 +320,7 @@ class _ListOfTasksState extends State<ListOfTasks> {
         context: context,
         builder: (context) {
           return AddTaskAlertDialog(onAddTask: () {
-            addItem(textEditingController.text);
+            addTask(textEditingController.text);
           });
         });
   }
@@ -328,24 +336,30 @@ class AddTaskAlertDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text('Создать задачу'),
-      content: Form(
-        key: formKey,
-        child: TextFormField(
-          maxLines: null,
-          controller: textEditingController,
-          validator: (value) {
-            if (value.isEmpty) {
-              return 'Введите текст';
-            } else if (value.length > 50) {
-              return 'Максимальное число символов - 50';
-            }
-            return null;
-          },
-          decoration: InputDecoration(hintText: "Введите название задачи"),
-        ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Form(
+            key: formKey,
+            child: TextFormField(
+              maxLines: null,
+              controller: textEditingController,
+              validator: (value) {
+                if (value.isEmpty) {
+                  return 'Введите текст';
+                } else if (value.length > 50) {
+                  return 'Максимальное число символов - 50';
+                }
+                return null;
+              },
+              decoration: InputDecoration(hintText: "Введите название задачи"),
+            ),
+          ),
+        ],
       ),
       actions: <Widget>[
         FlatButton(
+          textColor: Colors.black,
           child: Text('Отмена'),
           onPressed: () {
             textEditingController.clear();
@@ -353,6 +367,7 @@ class AddTaskAlertDialog extends StatelessWidget {
           },
         ),
         FlatButton(
+          textColor: Colors.black,
           child: Text('Добавить'),
           onPressed: () {
             if (formKey.currentState.validate()) {
@@ -453,6 +468,7 @@ class _TaskListItemState extends State<TaskListItem> {
                     value: widget.task.isDone,
                     onChanged: (newValue) {
                       setState(() {
+                        print(widget.task.creationDate);
                         widget.task.isDone = newValue;
                       });
                     },
@@ -465,7 +481,6 @@ class _TaskListItemState extends State<TaskListItem> {
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Text(widget.task.title,
-                                textDirection: TextDirection.ltr,
                                 overflow: TextOverflow.ellipsis,
                                 softWrap: true,
                                 maxLines: 6),

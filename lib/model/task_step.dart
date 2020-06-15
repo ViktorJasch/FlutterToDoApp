@@ -5,5 +5,8 @@ class TaskStep {
   bool isDone;
   TextEditingController textEditingController;
 
-  TaskStep({@required this.title, @required this.isDone, @required this.textEditingController});
+  TaskStep(
+      {@required this.title,
+      @required this.isDone,
+      @required this.textEditingController});
 }

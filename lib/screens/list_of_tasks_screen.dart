@@ -112,117 +112,19 @@ class _ListOfTasksState extends State<ListOfTasks> {
     );
   }
 
-  void showBottomDialog() {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext context) {
-          return Container(
-            height: 137.0,
-            color: Colors.transparent,
-            child: StatefulBuilder(
-                builder: (BuildContext context, StateSetter setState) {
-              return Container(
-                  decoration: new BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: new BorderRadius.only(
-                          topLeft: const Radius.circular(10.0),
-                          topRight: const Radius.circular(10.0))),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Padding(
-                              padding: EdgeInsets.only(left: 20, top: 20),
-                              child: Text('Выбор темы')),
-                        ],
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 10, top: 30),
-                        child: Row(
-                          children: <Widget>[
-                            Radio(
-                              value: 1,
-                              groupValue: selectedRadio,
-                              activeColor: Color(0xFFF44336),
-                              onChanged: (val) {
-                                setState(() {
-                                  setSelectedRadio(val);
-                                  setColor(val);
-                                });
-                              },
-                            ),
-                            Radio(
-                              value: 2,
-                              groupValue: selectedRadio,
-                              activeColor: Color(0xFFFF5722),
-                              onChanged: (val) {
-                                setState(() {
-                                  setSelectedRadio(val);
-                                  setColor(val);
-                                });
-                              },
-                            ),
-                            Radio(
-                              value: 3,
-                              groupValue: selectedRadio,
-                              activeColor: Color(0xFFFFC107),
-                              onChanged: (val) {
-                                setState(() {
-                                  setSelectedRadio(val);
-                                  setColor(val);
-                                });
-                              },
-                            ),
-                            Radio(
-                              value: 4,
-                              groupValue: selectedRadio,
-                              activeColor: Color(0xFF4CAF50),
-                              onChanged: (val) {
-                                setState(() {
-                                  setSelectedRadio(val);
-                                  setColor(val);
-                                });
-                              },
-                            ),
-                            Radio(
-                              value: 5,
-                              groupValue: selectedRadio,
-                              activeColor: Color(0xFF2C98F0),
-                              onChanged: (val) {
-                                setState(() {
-                                  setSelectedRadio(val);
-                                  setColor(val);
-                                });
-                              },
-                            ),
-                            Radio(
-                              value: 6,
-                              groupValue: selectedRadio,
-                              activeColor: Color(0xFF6202EE),
-                              onChanged: (val) {
-                                setState(() {
-                                  setSelectedRadio(val);
-                                  setColor(val);
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ));
-            }),
-          );
-        });
-  }
-
   List<Task> getTasks(bool shouldRemoveDone) {
     if (shouldRemoveDone) {
       return taskList.where((task) => !task.isDone).toList();
     } else {
       return taskList;
     }
+  }
+
+  void changeColor(Color color, Color background) {
+    DynamicTheme.of(context).setThemeData(new ThemeData(
+      primaryColor: color,
+    ));
+    backgroundColor = background;
   }
 
   void setColor(val) {
@@ -248,17 +150,127 @@ class _ListOfTasksState extends State<ListOfTasks> {
     }
   }
 
-  void changeColor(Color color, Color background) {
-    DynamicTheme.of(context).setThemeData(new ThemeData(
-      primaryColor: color,
-    ));
-    backgroundColor = background;
-  }
-
   void setSelectedRadio(int value) {
     setState(() {
       selectedRadio = value;
     });
+  }
+
+  void hideSelectedItems() {
+    setState(() {
+      shouldDoneTaskHidden = !shouldDoneTaskHidden;
+    });
+  }
+
+  void deleteSelectedItems() {
+    setState(() {
+      taskList.removeWhere((element) => element.isDone);
+    });
+  }
+
+  void showBottomDialog() {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            height: 137.0,
+            color: Colors.transparent,
+            child: StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+                  return Container(
+                      decoration: new BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: new BorderRadius.only(
+                              topLeft: const Radius.circular(10.0),
+                              topRight: const Radius.circular(10.0))),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              Padding(
+                                  padding: EdgeInsets.only(left: 20, top: 20),
+                                  child: Text('Выбор темы')),
+                            ],
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(left: 10, top: 30),
+                            child: Row(
+                              children: <Widget>[
+                                Radio(
+                                  value: 1,
+                                  groupValue: selectedRadio,
+                                  activeColor: Color(0xFFF44336),
+                                  onChanged: (val) {
+                                    setState(() {
+                                      setSelectedRadio(val);
+                                      setColor(val);
+                                    });
+                                  },
+                                ),
+                                Radio(
+                                  value: 2,
+                                  groupValue: selectedRadio,
+                                  activeColor: Color(0xFFFF5722),
+                                  onChanged: (val) {
+                                    setState(() {
+                                      setSelectedRadio(val);
+                                      setColor(val);
+                                    });
+                                  },
+                                ),
+                                Radio(
+                                  value: 3,
+                                  groupValue: selectedRadio,
+                                  activeColor: Color(0xFFFFC107),
+                                  onChanged: (val) {
+                                    setState(() {
+                                      setSelectedRadio(val);
+                                      setColor(val);
+                                    });
+                                  },
+                                ),
+                                Radio(
+                                  value: 4,
+                                  groupValue: selectedRadio,
+                                  activeColor: Color(0xFF4CAF50),
+                                  onChanged: (val) {
+                                    setState(() {
+                                      setSelectedRadio(val);
+                                      setColor(val);
+                                    });
+                                  },
+                                ),
+                                Radio(
+                                  value: 5,
+                                  groupValue: selectedRadio,
+                                  activeColor: Color(0xFF2C98F0),
+                                  onChanged: (val) {
+                                    setState(() {
+                                      setSelectedRadio(val);
+                                      setColor(val);
+                                    });
+                                  },
+                                ),
+                                Radio(
+                                  value: 6,
+                                  groupValue: selectedRadio,
+                                  activeColor: Color(0xFF6202EE),
+                                  onChanged: (val) {
+                                    setState(() {
+                                      setSelectedRadio(val);
+                                      setColor(val);
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ));
+                }),
+          );
+        });
   }
 
   void selectedItem(String value) {
@@ -302,17 +314,6 @@ class _ListOfTasksState extends State<ListOfTasks> {
     DateFormat formatter = DateFormat('dd.MM.yyyy');
     String currentDate = formatter.format(now);
     return currentDate;
-  }
-
-  void hideSelectedItems() {
-    setState(() {
-      shouldDoneTaskHidden = !shouldDoneTaskHidden;
-    });
-  }
-
-  void deleteSelectedItems() {
-    taskList.removeWhere((element) => element.isDone);
-    setState(() {});
   }
 
   displayDialog(BuildContext context) {
@@ -393,7 +394,6 @@ class TaskListItem extends StatefulWidget {
 }
 
 class _TaskListItemState extends State<TaskListItem> {
-
 
   @override
   void initState() {

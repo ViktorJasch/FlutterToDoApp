@@ -10,5 +10,12 @@ class Task {
   String creationDate;
   String deadlineDate;
 
-  Task({@required this.title, @required this.isDone, @required this.steps, @required this.note, @required this.id, @required this.creationDate, @required this.deadlineDate});
+  Task(
+      {@required this.title,
+      @required this.isDone,
+      @required this.steps,
+      @required this.note,
+      @required this.id,
+      @required this.creationDate,
+      @required this.deadlineDate});
 }

@@ -5,9 +5,6 @@ import 'package:todoapp/model/task_step.dart';
 import 'package:todoapp/model/task.dart';
 import 'package:flutter/cupertino.dart';
 
-var addStepFormController = TextEditingController();
-var addNoteStepController = TextEditingController();
-var taskNameEditorController = TextEditingController();
 MyGlobals myGlobals = new MyGlobals();
 
 class DetailScreen extends StatefulWidget {
@@ -59,6 +56,7 @@ class DetailView extends StatefulWidget {
 class _DetailViewState extends State<DetailView> {
   ScrollController _scrollController;
   bool isKeyboardShow;
+  var addNoteStepController = TextEditingController();
 
   @override
   void initState() {
@@ -137,11 +135,11 @@ class _DetailViewState extends State<DetailView> {
                     ),
                     AddStepButton(
                       isKeyboardShow: isKeyboardShow,
-                      onAddStep: () {
+                      onAddStep: (title) {
                         setState(() {
                           print(widget.task.steps);
                           widget.task.steps.add(TaskStep(
-                              title: addStepFormController.text,
+                              title: title,
                               isDone: false,
                               textEditingController: TextEditingController()));
                           widget.onTaskChanged();
@@ -407,7 +405,6 @@ class _DetailViewState extends State<DetailView> {
 }
 
 class StepListItem extends StatefulWidget {
-  TextEditingController textEditingController;
   final Function onDelete;
   final Function onStepChanged;
   final TaskStep step;
@@ -424,12 +421,13 @@ class StepListItem extends StatefulWidget {
 
 class _StepListItemState extends State<StepListItem> {
   GlobalKey<FormState> stepForm;
+  TextEditingController textEditingController;
 
   @override
   void initState() {
     super.initState();
     stepForm = GlobalKey<FormState>();
-    widget.textEditingController = TextEditingController()
+    textEditingController = TextEditingController()
       ..text = widget.step.title;
   }
 
@@ -471,7 +469,7 @@ class _StepListItemState extends State<StepListItem> {
                   return null;
                 },
                 decoration: InputDecoration(border: InputBorder.none),
-                controller: widget.textEditingController,
+                controller: textEditingController,
                 onFieldSubmitted: (text) {
                   if (stepForm.currentState.validate()) {
                     setState(() {
@@ -502,8 +500,9 @@ class _StepListItemState extends State<StepListItem> {
 
 class AddStepButton extends StatefulWidget {
   static final addStepForm = GlobalKey<FormState>();
-  final Function onAddStep;
+  final Function(String title) onAddStep;
   bool isKeyboardShow;
+  final addStepFormController = TextEditingController();
 
   AddStepButton({@required this.onAddStep, @required this.isKeyboardShow});
 
@@ -569,14 +568,14 @@ class _AddStepButtonState extends State<AddStepButton> {
           focusNode: myFocusNode,
           maxLines: null,
           keyboardType: TextInputType.text,
-          controller: addStepFormController,
+          controller: widget.addStepFormController,
           onFieldSubmitted: (value) {
             if (value.isNotEmpty) {
               setState(() {
                 widget.isKeyboardShow = false;
-                widget.onAddStep();
+                widget.onAddStep(widget.addStepFormController.text);
                 shouldShowTextField = !shouldShowTextField;
-                addStepFormController.clear();
+                widget.addStepFormController.clear();
               });
             } else {
               setState(() {
@@ -594,6 +593,7 @@ class EditNameTaskAlertDialog extends StatelessWidget {
   final Function onEditTaskName;
   final Task task;
   final formKey = GlobalKey<FormState>();
+  final taskNameEditorController = TextEditingController();
 
   EditNameTaskAlertDialog({@required this.onEditTaskName, @required this.task});
 
